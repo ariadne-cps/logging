@@ -4,6 +4,8 @@ project(Logging VERSION 1.0)
 
 option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
+
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/submodules/configuration/cmake/ProjectOptions.cmake")
     message(FATAL_ERROR
         "Git submodules are not initialized. "
