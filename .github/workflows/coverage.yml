@@ -49,15 +49,15 @@ jobs:
         sudo apt-get install -y cmake ninja-build pkg-config lcov g++-13
 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
+      run: cmake -E make_directory ${{runner.workspace}}/build -DWARNINGS_AS_ERRORS=ON
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -G "Ninja" -DCOVERAGE=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -G "Ninja" -DCOVERAGE=ON -DWARNINGS_AS_ERRORS=ON
 
     - name: Build, Test and Generate Code Coverage
       working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --parallel $($NPROC) --target coverage
+      run: cmake --build . --parallel $($NPROC) --target coverage -DWARNINGS_AS_ERRORS=ON
 
     - name: Upload Code Coverage
       if: runner.os == 'macOS'

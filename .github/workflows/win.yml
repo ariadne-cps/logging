@@ -26,15 +26,15 @@ jobs:
         submodules: recursive
 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
+      run: cmake -E make_directory ${{runner.workspace}}/build -DWARNINGS_AS_ERRORS=ON
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{runner.workspace}}/logging
+      run: cmake ${{runner.workspace}}/logging -DWARNINGS_AS_ERRORS=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --parallel --config ${{matrix.config.build-type}}
+      run: cmake --build . --parallel --config ${{matrix.config.build-type}} -DWARNINGS_AS_ERRORS=ON
 
     - name: Test
       working-directory: ${{runner.workspace}}/build

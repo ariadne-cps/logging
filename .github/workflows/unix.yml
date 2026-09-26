@@ -63,15 +63,15 @@ jobs:
       run: sudo apt install -y cmake ninja-build pkg-config clang-16 g++-12
 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
+      run: cmake -E make_directory ${{runner.workspace}}/build -DWARNINGS_AS_ERRORS=ON
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -G Ninja
+      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -G Ninja -DWARNINGS_AS_ERRORS=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --parallel $($NPROC)
+      run: cmake --build . --parallel $($NPROC) -DWARNINGS_AS_ERRORS=ON
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
@@ -90,15 +90,15 @@ jobs:
       run: sudo apt install -y cmake ninja-build pkg-config clang-16
 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build-tsan
+      run: cmake -E make_directory ${{runner.workspace}}/build-tsan -DWARNINGS_AS_ERRORS=ON
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build-tsan
-      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++-16 -DTHREAD_SANITIZER=ON -G Ninja
+      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++-16 -DTHREAD_SANITIZER=ON -G Ninja -DWARNINGS_AS_ERRORS=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build-tsan
-      run: cmake --build . --parallel 2
+      run: cmake --build . --parallel 2 -DWARNINGS_AS_ERRORS=ON
 
     - name: Test
       working-directory: ${{runner.workspace}}/build-tsan
