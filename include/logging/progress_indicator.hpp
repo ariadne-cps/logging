@@ -27,7 +27,7 @@
 
 #include <cmath>
 
-namespace Ariadne::Logging {
+namespace Ariadne {
 
 //! \brief Helper class to display progress percentage when holding text in Logger
 class ProgressIndicator {
@@ -45,6 +45,6 @@ class ProgressIndicator {
     unsigned int _step;
 };
 
-} // namespace Ariadne::Logging
+} // namespace Ariadne
 
 #endif // ARIADNE_LOGGING_PROGRESS_INDICATOR_HPP

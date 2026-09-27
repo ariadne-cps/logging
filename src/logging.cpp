@@ -37,7 +37,7 @@
 
 #include "logging/logging.hpp"
 
-namespace Ariadne::Logging {
+namespace Ariadne {
 
 class MessageConsumptionThread {
   public:
@@ -1255,7 +1255,7 @@ void Logger::_release(LogRawMessage const& msg) {
 }
 
 
-} // namespace Ariadne::Logging
+} // namespace Ariadne
 
 inline bool startup_logging() {
     std::cerr << std::boolalpha;

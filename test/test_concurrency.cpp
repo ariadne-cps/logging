@@ -15,7 +15,7 @@
 #include "logging/logging.hpp"
 #include "logging/thread_registry_interface.hpp"
 
-using namespace Ariadne::Logging;
+using namespace Ariadne;
 
 class ConcurrentThreadRegistry : public ThreadRegistryInterface {
   public:

@@ -33,7 +33,7 @@
 #include <functional>
 #include "logging/logging.hpp"
 
-namespace Ariadne::Logging {
+namespace Ariadne {
 
 template<class T> inline std::string to_string(const T& t) { std::stringstream ss; ss << t; return ss.str(); }
 
@@ -81,6 +81,6 @@ class Thread {
     std::thread _thread;
 };
 
-} // namespace Ariadne::Logging
+} // namespace Ariadne
 
 #endif // LOGGING_THREAD_HPP

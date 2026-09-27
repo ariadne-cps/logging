@@ -34,7 +34,7 @@
 #include "logging/progress_indicator.hpp"
 #include "test.hpp"
 
-using namespace Ariadne::Logging;
+using namespace Ariadne;
 
 void sample_function() {
     LOGGING_SCOPE_CREATE

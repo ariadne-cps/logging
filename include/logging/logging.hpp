@@ -69,7 +69,7 @@
 // The text for obvious reasons shouldn't have newlines and carriage returns; for efficiency purposes this is not checked.
 #define LOGGING_SCOPE_PRINTHOLD(text) { if (!Logger::instance().is_muted_at(0)) { std::ostringstream logger_stream; logger_stream << std::boolalpha << text; Logger::instance().hold(LOGGING_PRETTY_FUNCTION,logger_stream.str()); } }
 
-namespace Ariadne::Logging {
+namespace Ariadne {
 
 using OutputStream = std::ostream;
 template<class T> using SharedPointer = std::shared_ptr<T>;
@@ -362,6 +362,6 @@ class Logger {
     LoggerConfiguration _configuration;
 };
 
-} // namespace Ariadne::Logging
+} // namespace Ariadne
 
 #endif // ARIADNE_LOGGING_LOGGING_HPP
