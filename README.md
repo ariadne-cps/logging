@@ -16,27 +16,34 @@ It features the following:
 7) Support for holding text on the bottom line, useful for progress indicators (provided in the library) and similar displays
 8) A lot of configuration options for optionally printing entry/exit functions, thread identifiers, etc.
 
-### Building
+## Build
 
-To build the library from sources in a clean way, it is preferable that you set up a build subdirectory, say:
+Clone the repository together with its Git submodules:
 
-```
-$ mkdir build && cd build
-```
-
-Then you can prepare the build environment, choosing a Release build for maximum performance:
-
-```
-$ cmake .. -DCMAKE_BUILD_TYPE=Release
-```
-
-At this point, if no error arises, you can build with:
-
-```
-$ cmake --build .
+```bash
+git clone --recurse-submodules https://github.com/ariadne-cps/logging.git
+cd logging
+mkdir build
+cd build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+cmake --build . --parallel
+ctest --output-on-failure
 ```
 
-The library is meant to be used as a dependency, in particular by disabling testing as long as the *tests* target is already defined in an enclosing project.
+A C++20 compiler and CMake are required.
+
+## Coverage
+
+Configure a separate Debug build with coverage enabled:
+
+```bash
+mkdir build-coverage
+cd build-coverage
+cmake .. -DCMAKE_BUILD_TYPE=Debug -DCOVERAGE=ON
+cmake --build . --parallel --target coverage
+```
+
+On Ubuntu coverage is generated with GCC/lcov. On macOS it is generated with AppleClang/LLVM coverage tools.
 
 ## Contribution guidelines ##
 
