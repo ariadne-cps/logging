@@ -46,27 +46,15 @@ if(NOT TARGET logging)
     target_link_libraries(logging INTERFACE Threads::Threads)
 endif()
 
+setup_project_library(
+    TARGET ariadne-logging
+    OBJECTS LOGGING_SRC
+    LINK_LIBRARIES logging
+)
+
+setup_project_tests()
+
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
-    add_library(ariadne-logging SHARED
-        $<TARGET_OBJECTS:LOGGING_SRC>
-    )
-    target_link_libraries(ariadne-logging PUBLIC logging)
-
-
-    setup_standalone_project_tests(
-        TARGET ariadne-logging
-        TEST_DIRECTORY test
-        TEST_TARGET tests
-        SOURCES
-            "${PROJECT_SOURCE_DIR}/include"
-            "${PROJECT_SOURCE_DIR}/src"
-    )
-
-    install(TARGETS ariadne-logging
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
-    )
     install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/logging"
         DESTINATION include/ariadne-logging
     )
