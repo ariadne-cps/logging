@@ -52,9 +52,6 @@ if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     )
     target_link_libraries(ariadne-logging PUBLIC logging)
 
-    add_custom_target(distribution
-        DEPENDS ariadne-logging
-    )
 
     setup_standalone_project_tests(
         TARGET ariadne-logging
