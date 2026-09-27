@@ -63,7 +63,7 @@ jobs:
       run: sudo apt install -y cmake ninja-build pkg-config clang-16 g++-12
 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build -DWARNINGS_AS_ERRORS=ON
+      run: cmake -E make_directory ${{runner.workspace}}/build
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
@@ -71,7 +71,7 @@ jobs:
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --parallel $($NPROC) -DWARNINGS_AS_ERRORS=ON
+      run: cmake --build . --parallel $($NPROC)
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
@@ -90,7 +90,7 @@ jobs:
       run: sudo apt install -y cmake ninja-build pkg-config clang-16
 
     - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build-tsan -DWARNINGS_AS_ERRORS=ON
+      run: cmake -E make_directory ${{runner.workspace}}/build-tsan
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build-tsan
@@ -98,7 +98,7 @@ jobs:
 
     - name: Build
       working-directory: ${{runner.workspace}}/build-tsan
-      run: cmake --build . --parallel 2 -DWARNINGS_AS_ERRORS=ON
+      run: cmake --build . --parallel 2
 
     - name: Test
       working-directory: ${{runner.workspace}}/build-tsan
