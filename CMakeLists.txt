@@ -38,12 +38,26 @@ include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/include)
 if(NOT TARGET logging)
     add_subdirectory(src)
 
-    add_library(logging ${LIBRARY_KIND} $<TARGET_OBJECTS:LOGGING_SRC>)
-    set_target_properties(logging PROPERTIES OUTPUT_NAME "ariadne-logging")
-    target_link_libraries(logging ${CMAKE_THREAD_LIBS_INIT})
+    add_library(logging INTERFACE)
+    target_include_directories(logging INTERFACE
+        $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include/ariadne-logging>
+    )
+    target_link_libraries(logging INTERFACE Threads::Threads)
+endif()
+
+if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
+    add_library(ariadne-logging SHARED
+        $<TARGET_OBJECTS:LOGGING_SRC>
+    )
+    target_link_libraries(ariadne-logging PUBLIC logging)
+
+    add_custom_target(distribution
+        DEPENDS ariadne-logging
+    )
 
     setup_standalone_project_tests(
-        TARGET logging
+        TARGET ariadne-logging
         TEST_DIRECTORY test
         TEST_TARGET tests
         SOURCES
@@ -51,5 +65,12 @@ if(NOT TARGET logging)
             "${PROJECT_SOURCE_DIR}/src"
     )
 
-
+    install(TARGETS ariadne-logging
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+    )
+    install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/logging"
+        DESTINATION include/ariadne-logging
+    )
 endif()
