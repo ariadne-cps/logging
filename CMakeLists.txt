@@ -52,7 +52,14 @@ setup_project_library(
     LINK_LIBRARIES logging
 )
 
-setup_project_tests()
+setup_standalone_project_tests(
+    TARGET ariadne-logging
+    TEST_DIRECTORY tests
+    TEST_TARGET tests
+    SOURCES
+        "${PROJECT_SOURCE_DIR}/include"
+        "${PROJECT_SOURCE_DIR}/src"
+)
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
     install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/logging"
