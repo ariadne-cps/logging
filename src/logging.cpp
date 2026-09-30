@@ -902,9 +902,11 @@ unsigned int Logger::get_window_columns() const {
     const unsigned int DEFAULT_COLUMNS = 80;
     #ifndef _WIN32
         const unsigned int MAX_COLUMNS = 512;
-        struct winsize ws;
-        ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
-        return ((ws.ws_col > 0 and ws.ws_col <= MAX_COLUMNS) ? ws.ws_col : DEFAULT_COLUMNS);
+        struct winsize ws{};
+        if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws) == 0 and ws.ws_col > 0 and ws.ws_col <= MAX_COLUMNS) {
+            return ws.ws_col;
+        }
+        return DEFAULT_COLUMNS;
     #else
         return DEFAULT_COLUMNS;
     #endif
