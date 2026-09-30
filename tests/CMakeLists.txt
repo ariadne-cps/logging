@@ -7,7 +7,7 @@ set(UNIT_TESTS
 
 foreach(TEST ${UNIT_TESTS})
     add_executable(${TEST} ${TEST}.cpp)
-    target_link_libraries(${TEST} ariadne-logging logging)
+    target_link_libraries(${TEST} ariadne-logging logging utility)
     add_test(NAME ${TEST} COMMAND $<TARGET_FILE:${TEST}>)
     if(WIN32)
         set_tests_properties(${TEST} PROPERTIES

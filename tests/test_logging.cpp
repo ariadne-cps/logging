@@ -32,7 +32,7 @@
 #include "thread.hpp"
 #include "logging/logging.hpp"
 #include "logging/progress_indicator.hpp"
-#include "test.hpp"
+#include "utility/test.hpp"
 
 using namespace Ariadne;
 
@@ -85,61 +85,61 @@ class TestLogging {
     }
 
     void test() {
-        LOGGING_TEST_CALL(test_thread_registry())
-        LOGGING_TEST_CALL(test_print_configuration())
-        LOGGING_TEST_CALL(test_style_branch_combinations())
-        LOGGING_TEST_CALL(test_parser_branch_boundaries())
-        LOGGING_TEST_CALL(test_stylecode_adjacency_helper())
-        LOGGING_TEST_CALL(test_scheduler_noop_registration_paths())
-        LOGGING_TEST_CALL(test_hold_release_missing_scope())
-        LOGGING_TEST_CALL(test_remaining_branch_boundaries())
-        LOGGING_TEST_CALL(test_window_columns())
-        LOGGING_TEST_CALL(test_shown_single_print())
-        LOGGING_TEST_CALL(test_hidden_single_print())
-        LOGGING_TEST_CALL(test_muted_print())
-        LOGGING_TEST_CALL(test_use_blocking_scheduler())
-        LOGGING_TEST_CALL(test_use_nonblocking_scheduler())
-        LOGGING_TEST_CALL(test_shown_call_function_with_entrance_and_exit())
-        LOGGING_TEST_CALL(test_hide_call_function_with_entrance_and_exit())
-        LOGGING_TEST_CALL(test_indents_based_on_level())
-        LOGGING_TEST_CALL(test_high_level_multiline_hold())
-        LOGGING_TEST_CALL(test_high_level_hidden_level_and_hold_reprint())
-        LOGGING_TEST_CALL(test_hold_line())
-        LOGGING_TEST_CALL(test_hold_line_with_newline_println())
-        LOGGING_TEST_CALL(test_hold_long_line())
-        LOGGING_TEST_CALL(test_hold_multiple())
-        LOGGING_TEST_CALL(test_light_theme())
-        LOGGING_TEST_CALL(test_dark_theme())
-        LOGGING_TEST_CALL(test_theme_custom_keyword())
-        LOGGING_TEST_CALL(test_theme_bgcolor_bold_underline())
-        LOGGING_TEST_CALL(test_handles_multiline_output())
-        LOGGING_TEST_CALL(test_discards_newlines_and_indentation())
-        LOGGING_TEST_CALL(test_redirect())
-        LOGGING_TEST_CALL(test_multiple_threads_with_blocking_scheduler())
-        LOGGING_TEST_CALL(test_multiple_threads_with_nonblocking_scheduler())
-        LOGGING_TEST_CALL(test_register_self_thread())
-        LOGGING_TEST_CALL(test_printing_policy_with_theme_and_print_level(true,true))
-        LOGGING_TEST_CALL(test_printing_policy_with_theme_and_print_level(true,false))
-        LOGGING_TEST_CALL(test_printing_policy_with_theme_and_print_level(false,false))
-        LOGGING_TEST_CALL(test_printing_policy_with_theme_and_print_level(false,true))
+        ARIADNE_TEST_CALL(test_thread_registry())
+        ARIADNE_TEST_CALL(test_print_configuration())
+        ARIADNE_TEST_CALL(test_style_branch_combinations())
+        ARIADNE_TEST_CALL(test_parser_branch_boundaries())
+        ARIADNE_TEST_CALL(test_stylecode_adjacency_helper())
+        ARIADNE_TEST_CALL(test_scheduler_noop_registration_paths())
+        ARIADNE_TEST_CALL(test_hold_release_missing_scope())
+        ARIADNE_TEST_CALL(test_remaining_branch_boundaries())
+        ARIADNE_TEST_CALL(test_window_columns())
+        ARIADNE_TEST_CALL(test_shown_single_print())
+        ARIADNE_TEST_CALL(test_hidden_single_print())
+        ARIADNE_TEST_CALL(test_muted_print())
+        ARIADNE_TEST_CALL(test_use_blocking_scheduler())
+        ARIADNE_TEST_CALL(test_use_nonblocking_scheduler())
+        ARIADNE_TEST_CALL(test_shown_call_function_with_entrance_and_exit())
+        ARIADNE_TEST_CALL(test_hide_call_function_with_entrance_and_exit())
+        ARIADNE_TEST_CALL(test_indents_based_on_level())
+        ARIADNE_TEST_CALL(test_high_level_multiline_hold())
+        ARIADNE_TEST_CALL(test_high_level_hidden_level_and_hold_reprint())
+        ARIADNE_TEST_CALL(test_hold_line())
+        ARIADNE_TEST_CALL(test_hold_line_with_newline_println())
+        ARIADNE_TEST_CALL(test_hold_long_line())
+        ARIADNE_TEST_CALL(test_hold_multiple())
+        ARIADNE_TEST_CALL(test_light_theme())
+        ARIADNE_TEST_CALL(test_dark_theme())
+        ARIADNE_TEST_CALL(test_theme_custom_keyword())
+        ARIADNE_TEST_CALL(test_theme_bgcolor_bold_underline())
+        ARIADNE_TEST_CALL(test_handles_multiline_output())
+        ARIADNE_TEST_CALL(test_discards_newlines_and_indentation())
+        ARIADNE_TEST_CALL(test_redirect())
+        ARIADNE_TEST_CALL(test_multiple_threads_with_blocking_scheduler())
+        ARIADNE_TEST_CALL(test_multiple_threads_with_nonblocking_scheduler())
+        ARIADNE_TEST_CALL(test_register_self_thread())
+        ARIADNE_TEST_CALL(test_printing_policy_with_theme_and_print_level(true,true))
+        ARIADNE_TEST_CALL(test_printing_policy_with_theme_and_print_level(true,false))
+        ARIADNE_TEST_CALL(test_printing_policy_with_theme_and_print_level(false,false))
+        ARIADNE_TEST_CALL(test_printing_policy_with_theme_and_print_level(false,true))
     }
 
     void test_thread_registry() {
-        LOGGING_TEST_FAIL(Logger::instance().use_immediate_scheduler())
-        LOGGING_TEST_FAIL(Logger::instance().use_blocking_scheduler())
-        LOGGING_TEST_FAIL(Logger::instance().use_nonblocking_scheduler())
-        LOGGING_TEST_FAIL(Logger::instance().register_thread(std::this_thread::get_id(),"no-registry"))
-        LOGGING_TEST_FAIL(Logger::instance().register_self_thread("no-registry",1))
-        LOGGING_TEST_FAIL(Logger::instance().unregister_thread(std::this_thread::get_id()))
+        ARIADNE_TEST_FAIL(Logger::instance().use_immediate_scheduler())
+        ARIADNE_TEST_FAIL(Logger::instance().use_blocking_scheduler())
+        ARIADNE_TEST_FAIL(Logger::instance().use_nonblocking_scheduler())
+        ARIADNE_TEST_FAIL(Logger::instance().register_thread(std::this_thread::get_id(),"no-registry"))
+        ARIADNE_TEST_FAIL(Logger::instance().register_self_thread("no-registry",1))
+        ARIADNE_TEST_FAIL(Logger::instance().unregister_thread(std::this_thread::get_id()))
         Logger::instance().attach_thread_registry(&_registry);
-        LOGGING_TEST_FAIL(Logger::instance().attach_thread_registry(&_registry))
-        LOGGING_TEST_EXECUTE(Logger::instance().use_immediate_scheduler())
-        LOGGING_TEST_EXECUTE(Logger::instance().use_blocking_scheduler())
-        LOGGING_TEST_EXECUTE(Logger::instance().use_nonblocking_scheduler())
+        ARIADNE_TEST_FAIL(Logger::instance().attach_thread_registry(&_registry))
+        ARIADNE_TEST_EXECUTE(Logger::instance().use_immediate_scheduler())
+        ARIADNE_TEST_EXECUTE(Logger::instance().use_blocking_scheduler())
+        ARIADNE_TEST_EXECUTE(Logger::instance().use_nonblocking_scheduler())
         _registry.set_threads_registered(1);
-        LOGGING_TEST_FAIL(Logger::instance().use_immediate_scheduler())
-        LOGGING_TEST_FAIL(Logger::instance().use_blocking_scheduler())
-        LOGGING_TEST_FAIL(Logger::instance().use_nonblocking_scheduler())
+        ARIADNE_TEST_FAIL(Logger::instance().use_immediate_scheduler())
+        ARIADNE_TEST_FAIL(Logger::instance().use_blocking_scheduler())
+        ARIADNE_TEST_FAIL(Logger::instance().use_nonblocking_scheduler())
         _registry.set_threads_registered(0);
     }
 
@@ -150,15 +150,15 @@ class TestLogging {
 
         std::ostringstream invalid_policy;
         invalid_policy << static_cast<ThreadNamePrintingPolicy>(255);
-        LOGGING_TEST_EQUALS(invalid_policy.str().compare("NEVER"), 0);
+        ARIADNE_TEST_EQUALS(invalid_policy.str().compare("NEVER"), 0);
     }
 
     void test_style_branch_combinations() {
-        LOGGING_TEST_ASSERT(!TT_STYLE_NONE.is_styled());
-        LOGGING_TEST_ASSERT(TerminalTextStyle(1,0,false,false).is_styled());
-        LOGGING_TEST_ASSERT(TerminalTextStyle(0,1,false,false).is_styled());
-        LOGGING_TEST_ASSERT(TerminalTextStyle(0,0,true,false).is_styled());
-        LOGGING_TEST_ASSERT(TerminalTextStyle(0,0,false,true).is_styled());
+        ARIADNE_TEST_ASSERT(!TT_STYLE_NONE.is_styled());
+        ARIADNE_TEST_ASSERT(TerminalTextStyle(1,0,false,false).is_styled());
+        ARIADNE_TEST_ASSERT(TerminalTextStyle(0,1,false,false).is_styled());
+        ARIADNE_TEST_ASSERT(TerminalTextStyle(0,0,true,false).is_styled());
+        ARIADNE_TEST_ASSERT(TerminalTextStyle(0,0,false,true).is_styled());
 
         using ThemeField = TerminalTextStyle TerminalTextTheme::*;
         const std::array<ThemeField,14> fields = {
@@ -178,11 +178,11 @@ class TestLogging {
             &TerminalTextTheme::keyword
         };
 
-        LOGGING_TEST_ASSERT(!TT_THEME_NONE.has_style());
+        ARIADNE_TEST_ASSERT(!TT_THEME_NONE.has_style());
         for (auto field : fields) {
             TerminalTextTheme theme;
             theme.*field = TerminalTextStyle(1,0,false,false);
-            LOGGING_TEST_ASSERT(theme.has_style());
+            ARIADNE_TEST_ASSERT(theme.has_style());
         }
     }
 
@@ -216,18 +216,18 @@ class TestLogging {
     }
 
     void test_stylecode_adjacency_helper() {
-        LOGGING_TEST_ASSERT(!isalphanumeric_withstylecodes("[",0));
-        LOGGING_TEST_ASSERT(isalphanumeric_withstylecodes("A",0));
-        LOGGING_TEST_ASSERT(isalphanumeric_withstylecodes("1",0));
-        LOGGING_TEST_ASSERT(isalphanumeric_withstylecodes("m",0));
+        ARIADNE_TEST_ASSERT(!isalphanumeric_withstylecodes("[",0));
+        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes("A",0));
+        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes("1",0));
+        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes("m",0));
 
         std::string alpha_reset = std::string("A\033[0m");
         std::string digit_reset = std::string("1\033[0m");
         std::string punctuation_reset = std::string("[\033[0m");
 
-        LOGGING_TEST_ASSERT(isalphanumeric_withstylecodes(alpha_reset,alpha_reset.size()-1));
-        LOGGING_TEST_ASSERT(isalphanumeric_withstylecodes(digit_reset,digit_reset.size()-1));
-        LOGGING_TEST_ASSERT(!isalphanumeric_withstylecodes(punctuation_reset,punctuation_reset.size()-1));
+        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes(alpha_reset,alpha_reset.size()-1));
+        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes(digit_reset,digit_reset.size()-1));
+        ARIADNE_TEST_ASSERT(!isalphanumeric_withstylecodes(punctuation_reset,punctuation_reset.size()-1));
     }
 
     void test_scheduler_noop_registration_paths() {
@@ -305,38 +305,38 @@ class TestLogging {
     void test_window_columns() {
 #ifndef _WIN32
         int master_fd = posix_openpt(O_RDWR);
-        LOGGING_TEST_ASSERT(master_fd >= 0);
+        ARIADNE_TEST_ASSERT(master_fd >= 0);
         if (master_fd < 0) return;
-        LOGGING_TEST_EQUALS(grantpt(master_fd),0);
-        LOGGING_TEST_EQUALS(unlockpt(master_fd),0);
+        ARIADNE_TEST_EQUALS(grantpt(master_fd),0);
+        ARIADNE_TEST_EQUALS(unlockpt(master_fd),0);
         char* slave_name = ptsname(master_fd);
-        LOGGING_TEST_ASSERT(slave_name != nullptr);
+        ARIADNE_TEST_ASSERT(slave_name != nullptr);
         if (slave_name == nullptr) { close(master_fd); return; }
 
         int slave_fd = open(slave_name,O_RDWR);
-        LOGGING_TEST_ASSERT(slave_fd >= 0);
+        ARIADNE_TEST_ASSERT(slave_fd >= 0);
         if (slave_fd < 0) { close(master_fd); return; }
 
         int saved_stdout = dup(STDOUT_FILENO);
-        LOGGING_TEST_ASSERT(saved_stdout >= 0);
+        ARIADNE_TEST_ASSERT(saved_stdout >= 0);
         if (saved_stdout < 0) { close(slave_fd); close(master_fd); return; }
 
         struct winsize ws {};
         ws.ws_col = 123;
-        LOGGING_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
-        LOGGING_TEST_EQUALS(dup2(slave_fd,STDOUT_FILENO),STDOUT_FILENO);
-        LOGGING_TEST_EQUALS(Logger::instance().get_window_columns(),123u);
+        ARIADNE_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
+        ARIADNE_TEST_EQUALS(dup2(slave_fd,STDOUT_FILENO),STDOUT_FILENO);
+        ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),123u);
 
         ws.ws_col = 600;
-        LOGGING_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
-        LOGGING_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
+        ARIADNE_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
+        ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
 
-        LOGGING_TEST_EQUALS(dup2(saved_stdout,STDOUT_FILENO),STDOUT_FILENO);
+        ARIADNE_TEST_EQUALS(dup2(saved_stdout,STDOUT_FILENO),STDOUT_FILENO);
         close(saved_stdout);
         close(slave_fd);
         close(master_fd);
 #else
-        LOGGING_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
+        ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
 #endif
     }
 
@@ -459,7 +459,7 @@ class TestLogging {
 
     void test_handles_multiline_output() {
         SizeType num_cols = Logger::instance().get_window_columns();
-        LOGGING_PRINT_TEST_COMMENT("Number of window columns: " << num_cols)
+        ARIADNE_PRINT_TEST_COMMENT("Number of window columns: " << num_cols)
         Logger::instance().use_immediate_scheduler();
         Logger::instance().configuration().set_verbosity(2);
         Logger::instance().configuration().set_handles_multiline_output(true);
@@ -615,7 +615,7 @@ class TestLogging {
             }
             file.close();
         }
-        LOGGING_TEST_EQUALS(count,3);
+        ARIADNE_TEST_EQUALS(count,3);
     }
 
     void test_multiple_threads_with_blocking_scheduler() {
@@ -624,7 +624,7 @@ class TestLogging {
         Logger::instance().configuration().set_theme(TT_THEME_DARK);
         Logger::instance().configuration().set_thread_name_printing_policy(ThreadNamePrintingPolicy::BEFORE);
         LOGGING_PRINTLN("Printing on the " << Logger::instance().current_thread_name() << " thread without other threads");
-        LOGGING_TEST_EQUALS(Logger::instance().cached_last_printed_thread_name().compare("main"), 0);
+        ARIADNE_TEST_EQUALS(Logger::instance().cached_last_printed_thread_name().compare("main"), 0);
 
         std::string thread1_name;
         std::string thread2_name;
@@ -640,8 +640,8 @@ class TestLogging {
             LOGGING_PRINTLN("Printing again on the main thread, but with other threads");
         }
 
-        LOGGING_TEST_EQUALS(thread1_name.compare("thr1"), 0);
-        LOGGING_TEST_EQUALS(thread2_name.compare("thr2"), 0);
+        ARIADNE_TEST_EQUALS(thread1_name.compare("thr1"), 0);
+        ARIADNE_TEST_EQUALS(thread2_name.compare("thr2"), 0);
     }
 
     void test_multiple_threads_with_nonblocking_scheduler() {
@@ -667,7 +667,7 @@ class TestLogging {
         Logger::instance().configuration().set_theme(TT_THEME_DARK);
         Logger::instance().configuration().set_thread_name_printing_policy(ThreadNamePrintingPolicy::BEFORE);
         LOGGING_PRINTLN("Printing on the " << Logger::instance().current_thread_name() << " thread without other threads");
-        LOGGING_TEST_EQUALS(Logger::instance().cached_last_printed_thread_name().compare("main"), 0);
+        ARIADNE_TEST_EQUALS(Logger::instance().cached_last_printed_thread_name().compare("main"), 0);
         std::thread::id thread_id;
         std::thread thread1([&thread_id] { thread_id = std::this_thread::get_id(); Logger::instance().register_self_thread("thr1", 1); print_something1(); });
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -676,7 +676,7 @@ class TestLogging {
     }
 
     void test_printing_policy_with_theme_and_print_level(bool use_theme, bool print_level) {
-        LOGGING_PRINT_TEST_COMMENT("Policies: " << ThreadNamePrintingPolicy::BEFORE << " " << ThreadNamePrintingPolicy::AFTER << " " << ThreadNamePrintingPolicy::NEVER)
+        ARIADNE_PRINT_TEST_COMMENT("Policies: " << ThreadNamePrintingPolicy::BEFORE << " " << ThreadNamePrintingPolicy::AFTER << " " << ThreadNamePrintingPolicy::NEVER)
         Logger::instance().use_immediate_scheduler();
         Logger::instance().use_blocking_scheduler();
         Logger::instance().configuration().set_verbosity(3);
@@ -703,6 +703,6 @@ int main() {
 
     TestLogging().test();
 
-    return LOGGING_TEST_FAILURES;
+    return ARIADNE_TEST_FAILURES;
 }
 
