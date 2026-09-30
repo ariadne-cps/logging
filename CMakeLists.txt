@@ -15,6 +15,14 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/submodules/configuration/cmake/ProjectOptio
 
 require_initialized_submodules()
 
+if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    require_same_dependency_commit(Configuration
+        REFERENCES
+            "${PROJECT_SOURCE_DIR}|submodules/configuration"
+            "${PROJECT_SOURCE_DIR}/submodules/utility|submodules/configuration"
+    )
+endif()
+
 option(THREAD_SANITIZER "Enable ThreadSanitizer" OFF)
 
 setup_project()
@@ -34,6 +42,8 @@ endif()
 find_package(Threads REQUIRED)
 
 include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/include)
+
+add_subdirectory(submodules)
 
 if(NOT TARGET logging)
     add_subdirectory(src)
