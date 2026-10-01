@@ -34,7 +34,7 @@ jobs:
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --parallel --config ${{matrix.config.build-type}}
+      run: cmake --build . --parallel --config ${{matrix.config.build-type}} --target everything
 
     - name: Test
       working-directory: ${{runner.workspace}}/build

@@ -71,7 +71,7 @@ jobs:
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --parallel $($NPROC)
+      run: cmake --build . --parallel $($NPROC) --target everything
 
     - name: Test
       working-directory: ${{runner.workspace}}/build
