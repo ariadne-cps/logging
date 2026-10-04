@@ -56,6 +56,11 @@ if(NOT TARGET logging)
     target_link_libraries(logging INTERFACE Threads::Threads)
 endif()
 
+ariadne_register_public_headers(
+    TARGET logging
+    DIRECTORIES "${PROJECT_SOURCE_DIR}/include/logging"
+)
+
 setup_project_library(
     TARGET ariadne-logging
     OBJECTS LOGGING_SRC
@@ -72,7 +77,8 @@ setup_standalone_project_tests(
 )
 
 if(CMAKE_SOURCE_DIR STREQUAL PROJECT_SOURCE_DIR)
-    install(DIRECTORY "${PROJECT_SOURCE_DIR}/include/logging"
+    ariadne_install_dependency_bundle(
+        TARGET logging
         DESTINATION include/ariadne-logging
     )
 endif()
