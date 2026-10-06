@@ -93,6 +93,7 @@ class TestLogging {
         ARIADNE_TEST_CALL(test_scheduler_noop_registration_paths())
         ARIADNE_TEST_CALL(test_hold_release_missing_scope())
         ARIADNE_TEST_CALL(test_remaining_branch_boundaries())
+        ARIADNE_TEST_CALL(test_progress_indicator_accessors())
         ARIADNE_TEST_CALL(test_window_columns())
         ARIADNE_TEST_CALL(test_shown_single_print())
         ARIADNE_TEST_CALL(test_hidden_single_print())
@@ -302,6 +303,17 @@ class TestLogging {
         Logger::instance().redirect_to_console();
     }
 
+    void test_progress_indicator_accessors() {
+        ProgressIndicator indicator(10.0);
+        ARIADNE_TEST_EQUALS(indicator.final_value(),10.0);
+        ARIADNE_TEST_EQUALS(indicator.current_value(),0.0);
+        indicator.update_current(4.0);
+        ARIADNE_TEST_EQUALS(indicator.current_value(),4.0);
+        indicator.update_final(8.0);
+        ARIADNE_TEST_EQUALS(indicator.final_value(),8.0);
+        ARIADNE_TEST_EQUALS(indicator.percentage(),50u);
+    }
+
     void test_window_columns() {
 #ifndef _WIN32
         int master_fd = posix_openpt(O_RDWR);
@@ -328,6 +340,10 @@ class TestLogging {
         ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),123u);
 
         ws.ws_col = 600;
+        ARIADNE_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
+        ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
+
+        ws.ws_col = 0;
         ARIADNE_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
         ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
 
