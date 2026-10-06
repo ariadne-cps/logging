@@ -41,7 +41,7 @@ endif()
 
 find_package(Threads REQUIRED)
 
-include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 add_subdirectory(submodules)
 
