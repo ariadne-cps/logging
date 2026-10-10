@@ -6,6 +6,9 @@ on:
     - main
   pull_request:
 
+env:
+  SCCACHE_GHA_ENABLED: "true"
+
 jobs:
   build:
     name: ${{ matrix.config.name }}
@@ -30,6 +33,11 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Set up sccache
+      uses: mozilla-actions/sccache-action@v0.0.11
+      with:
+        version: "v0.18.0"
+
     - name: Get macOS Concurrency
       if: runner.os == 'macOS'
       run: echo NPROC="sysctl -n hw.ncpu" >> $GITHUB_ENV
@@ -53,7 +61,7 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -G "Ninja" -DCOVERAGE=ON -DWARNINGS_AS_ERRORS=ON
+      run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -G "Ninja" -DCOVERAGE=ON -DWARNINGS_AS_ERRORS=ON
 
     - name: Build, Test and Generate Code Coverage
       working-directory: ${{runner.workspace}}/build

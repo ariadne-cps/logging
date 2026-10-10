@@ -9,6 +9,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  SCCACHE_GHA_ENABLED: "true"
 
 jobs:
   build:
@@ -40,6 +41,11 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Set up sccache
+      uses: mozilla-actions/sccache-action@v0.0.11
+      with:
+        version: "v0.18.0"
+
     - name: Get macOS Concurrency
       if: runner.os == 'macOS'
       run: |
@@ -67,7 +73,7 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -G Ninja -DWARNINGS_AS_ERRORS=ON
+      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -G Ninja -DWARNINGS_AS_ERRORS=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build
@@ -86,6 +92,11 @@ jobs:
       with:
         submodules: recursive
 
+    - name: Set up sccache
+      uses: mozilla-actions/sccache-action@v0.0.11
+      with:
+        version: "v0.18.0"
+
     - name: Set Up Dependencies
       run: sudo apt install -y cmake ninja-build pkg-config clang-16
 
@@ -94,7 +105,7 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{runner.workspace}}/build-tsan
-      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++-16 -DTHREAD_SANITIZER=ON -G Ninja -DWARNINGS_AS_ERRORS=ON
+      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++-16 -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DTHREAD_SANITIZER=ON -G Ninja -DWARNINGS_AS_ERRORS=ON
 
     - name: Build
       working-directory: ${{runner.workspace}}/build-tsan
