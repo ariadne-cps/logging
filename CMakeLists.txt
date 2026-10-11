@@ -19,7 +19,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
     require_same_dependency_commit(Configuration
         REFERENCES
             "${PROJECT_SOURCE_DIR}|submodules/configuration"
-            "${PROJECT_SOURCE_DIR}/submodules/utility|submodules/configuration"
+            "${PROJECT_SOURCE_DIR}/submodules/macro|submodules/configuration"
     )
 endif()
 

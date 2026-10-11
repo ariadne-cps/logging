@@ -1,3 +1,3 @@
-if(NOT TARGET utility)
-    add_subdirectory(utility)
+if(NOT TARGET macro)
+    add_subdirectory(macro)
 endif()

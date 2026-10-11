@@ -32,7 +32,7 @@
 #include "thread.hpp"
 #include "logging/logging.hpp"
 #include "logging/progress_indicator.hpp"
-#include "utility/test.hpp"
+#include "macro/testing.hpp"
 
 using namespace Ariadne;
 
