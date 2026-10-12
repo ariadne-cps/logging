@@ -23,21 +23,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
     )
 endif()
 
-option(THREAD_SANITIZER "Enable ThreadSanitizer" OFF)
-
 setup_project()
-
-if(COVERAGE AND THREAD_SANITIZER)
-    message(FATAL_ERROR "COVERAGE and THREAD_SANITIZER cannot be enabled together.")
-endif()
-
-if(THREAD_SANITIZER)
-    if(WIN32 OR NOT CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-        message(FATAL_ERROR "ThreadSanitizer is supported only with GCC or Clang on Unix-like systems.")
-    endif()
-    add_compile_options(-fsanitize=thread -fno-omit-frame-pointer -g)
-    add_link_options(-fsanitize=thread)
-endif()
 
 find_package(Threads REQUIRED)
 
