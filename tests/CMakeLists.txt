@@ -1,13 +1,14 @@
 include(CTest)
 
 set(UNIT_TESTS
+    test_command_line
     test_logging
     test_concurrency
 )
 
 foreach(TEST ${UNIT_TESTS})
     add_executable(${TEST} ${TEST}.cpp)
-    target_link_libraries(${TEST} ariadne-logging logging macro)
+    target_link_libraries(${TEST} ariadne-logging logging)
     add_test(NAME ${TEST} COMMAND $<TARGET_FILE:${TEST}>)
     if(WIN32)
         set_tests_properties(${TEST} PROPERTIES

@@ -4,7 +4,6 @@ project(Logging VERSION 1.0)
 
 option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" OFF)
 
-
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ss/configuration/cmake/ProjectOptions.cmake")
     message(FATAL_ERROR
         "Git submodules are not initialized. "
@@ -19,7 +18,8 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
     require_same_dependency_commit(Configuration
         REFERENCES
             "${PROJECT_SOURCE_DIR}|ss/configuration"
-            "${PROJECT_SOURCE_DIR}/ss/macro|ss/configuration"
+            "${PROJECT_SOURCE_DIR}/ss/utility|ss/configuration"
+            "${PROJECT_SOURCE_DIR}/ss/utility/ss/macro|ss/configuration"
     )
 endif()
 
@@ -32,14 +32,15 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 add_subdirectory(ss)
 
 if(NOT TARGET logging)
-    add_subdirectory(src)
-
     add_library(logging INTERFACE)
     target_include_directories(logging INTERFACE
         $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include/ariadne-logging>
     )
-    target_link_libraries(logging INTERFACE Threads::Threads)
+    target_link_libraries(logging INTERFACE utility Threads::Threads)
+
+    add_subdirectory(src)
+    target_link_libraries(LOGGING_SRC PRIVATE logging)
 endif()
 
 ariadne_register_public_headers(
