@@ -30,8 +30,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        submodules: recursive
 
     - name: Set up sccache
       uses: mozilla-actions/sccache-action@v0.0.11
