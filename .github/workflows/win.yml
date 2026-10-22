@@ -10,43 +10,47 @@ env:
   SCCACHE_GHA_ENABLED: "true"
 
 jobs:
-  build:
-
-    name: ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
+  build-test:
+    name: Windows 2025 MSVC [${{ matrix.build_type == 'Release' && 'Release Build' || 'Debug Tests' }}]
+    runs-on: windows-2025
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - {
-            name: "Windows 2025 [Release]",
-            os: windows-2025,
-            build-type: "Release"
-          }
+        build_type: [Release, Debug]
+
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up MSVC environment
-      uses: ilammy/msvc-dev-cmd@v1.13.0
-      with:
-        arch: x64
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1.13.0
+        with:
+          arch: x64
 
-    - name: Set up sccache
-      uses: mozilla-actions/sccache-action@v0.0.11
-      with:
-        version: "v0.18.0"
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
+        with:
+          version: "v0.18.0"
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build -G Ninja `
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache `
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache `
+            -DWARNINGS_AS_ERRORS=ON
 
-    - name: Configure CMake
-      working-directory: ${{runner.workspace}}/build
-      run: cmake ${{runner.workspace}}/logging -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DWARNINGS_AS_ERRORS=ON
+      - name: Build Release library
+        if: matrix.build_type == 'Release'
+        run: cmake --build build --parallel --target ariadne-logging
 
-    - name: Build
-      working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --parallel --target everything
+      - name: Install Release library
+        if: matrix.build_type == 'Release'
+        run: cmake --install build --prefix "${{ runner.workspace }}/install"
 
-    - name: Test
-      working-directory: ${{runner.workspace}}/build
-      run: ctest --output-on-failure
+      - name: Build Debug tests
+        if: matrix.build_type == 'Debug'
+        run: cmake --build build --parallel --target tests
+
+      - name: Run Debug tests
+        if: matrix.build_type == 'Debug'
+        run: ctest --test-dir build --output-on-failure

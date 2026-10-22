@@ -2,8 +2,8 @@
 
 # Ariadne Logging
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Unix Status](https://github.com/ariadne-cps/logging/workflows/Unix/badge.svg)](https://github.com/ariadne-cps/logging/actions/workflows/unix.yml)
-[![Windows Status](https://github.com/ariadne-cps/logging/workflows/Windows/badge.svg)](https://github.com/ariadne-cps/logging/actions/workflows/windows.yml) [![Coverage Status](https://github.com/ariadne-cps/logging/workflows/Coverage/badge.svg)](https://github.com/ariadne-cps/logging/actions/workflows/coverage.yml) [![codecov](https://codecov.io/gh/ariadne-cps/logging/branch/main/graph/badge.svg)](https://codecov.io/gh/ariadne-cps/logging)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) [![Unix Status](https://github.com/ariadne-cps/logging/actions/workflows/unix.yml/badge.svg)](https://github.com/ariadne-cps/logging/actions/workflows/unix.yml)
+[![Windows Status](https://github.com/ariadne-cps/logging/actions/workflows/win.yml/badge.svg)](https://github.com/ariadne-cps/logging/actions/workflows/win.yml) [![Sanitizers Status](https://github.com/ariadne-cps/logging/actions/workflows/sanitizers.yml/badge.svg)](https://github.com/ariadne-cps/logging/actions/workflows/sanitizers.yml) [![Coverage Status](https://github.com/ariadne-cps/logging/actions/workflows/coverage.yml/badge.svg)](https://github.com/ariadne-cps/logging/actions/workflows/coverage.yml) [![codecov](https://codecov.io/gh/ariadne-cps/logging/branch/main/graph/badge.svg)](https://codecov.io/gh/ariadne-cps/logging)
 
 Logging is a library for concurrent logging.
 It features the following:
@@ -23,14 +23,28 @@ Clone the repository together with its Git submodules:
 ```bash
 git clone --recurse-submodules https://github.com/ariadne-cps/logging.git
 cd logging
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE=Release
-cmake --build . --parallel
-ctest --output-on-failure
+cmake -S . -B build-release -DCMAKE_BUILD_TYPE=Release
+cmake --build build-release --parallel --target ariadne-logging
+cmake --install build-release --prefix install
 ```
 
 A C++20 compiler and CMake are required.
+
+## Tests
+
+Build and run the C++ tests independently in Debug mode:
+
+```bash
+cmake -S . -B build-debug -DCMAKE_BUILD_TYPE=Debug
+cmake --build build-debug --parallel --target tests
+ctest --test-dir build-debug --output-on-failure
+```
+
+## Sanitizers
+
+The Sanitizers workflow runs separate Debug builds on Ubuntu with Clang:
+ThreadSanitizer for data races and AddressSanitizer + UndefinedBehaviorSanitizer
+for memory errors and undefined behavior.
 
 ## Coverage
 

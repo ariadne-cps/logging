@@ -8,107 +8,68 @@ on:
   pull_request:
 
 env:
-  BUILD_TYPE: Release
   SCCACHE_GHA_ENABLED: "true"
 
 jobs:
-  build:
-
-    name: ${{ matrix.config.name }}
+  build-test:
+    name: ${{ matrix.config.name }} [${{ matrix.build_type == 'Release' && 'Release Build' || 'Debug Tests' }}]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: false
       matrix:
+        build_type: [Release, Debug]
         config:
-          - {
-            name: "macOS 26 AppleClang 21 [Release]",
-            os: macos-26,
-            cxx: "/usr/bin/clang++"
-          }
-          - {
-            name: "Ubuntu 24.04 Clang 16 [Release]",
-            os: ubuntu-24.04,
-            cxx: "clang++-16"
-          }
-          - {
-            name: "Ubuntu 24.04 GCC 12 [Release]",
-            os: ubuntu-24.04,
-            cxx: "g++-12"
-          }
+          - { name: "macOS 26 AppleClang 21", os: macos-26, cxx: "/usr/bin/clang++" }
+          - { name: "Ubuntu 24.04 Clang 16", os: ubuntu-24.04, cxx: "clang++-16", pkg: "clang-16" }
+          - { name: "Ubuntu 24.04 GCC 12", os: ubuntu-24.04, cxx: "g++-12", pkg: "g++-12" }
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up sccache
-      uses: mozilla-actions/sccache-action@v0.0.11
-      with:
-        version: "v0.18.0"
+      - name: Set up sccache
+        uses: mozilla-actions/sccache-action@v0.0.11
+        with:
+          version: "v0.18.0"
 
-    - name: Get macOS Concurrency
-      if: runner.os == 'macOS'
-      run: |
-        echo NPROC="sysctl -n hw.ncpu" >> $GITHUB_ENV
-        echo "Running on $(sysctl -n hw.ncpu) threads ..."
+      - name: Get macOS concurrency
+        if: runner.os == 'macOS'
+        run: echo "NPROC=$(sysctl -n hw.ncpu)" >> "$GITHUB_ENV"
 
-    - name: Get Linux Concurrency
-      if: runner.os == 'Linux'
-      run: |
-        echo NPROC="nproc" >> $GITHUB_ENV
-        echo "Running on $(nproc) threads ..."
+      - name: Get Linux concurrency
+        if: runner.os == 'Linux'
+        run: echo "NPROC=$(nproc)" >> "$GITHUB_ENV"
 
-    - name: Set Up macOS Dependencies
-      if: runner.os == 'macOS'
-      run: |
-        brew install ninja
-        export PKG_CONFIG_PATH=/usr/local/opt/libffi/lib/pkgconfig
+      - name: Set up macOS dependencies
+        if: runner.os == 'macOS'
+        run: brew install ninja
 
-    - name: Set Up Linux Dependencies
-      if: runner.os == 'Linux'
-      run: sudo apt install -y cmake ninja-build pkg-config clang-16 g++-12
+      - name: Set up Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build pkg-config ${{ matrix.config.pkg }}
 
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build
+      - name: Configure CMake
+        run: |
+          cmake -S . -B "${{ runner.workspace }}/build" -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_CXX_COMPILER=${{ matrix.config.cxx }} \
+            -DCMAKE_C_COMPILER_LAUNCHER=sccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=sccache \
+            -DWARNINGS_AS_ERRORS=ON
 
-    - name: Configure CMake
-      working-directory: ${{runner.workspace}}/build
-      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_COMPILER=${{matrix.config.cxx}} -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -G Ninja -DWARNINGS_AS_ERRORS=ON
+      - name: Build Release library
+        if: matrix.build_type == 'Release'
+        run: cmake --build "${{ runner.workspace }}/build" --parallel "$NPROC" --target ariadne-logging
 
-    - name: Build
-      working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --parallel $($NPROC) --target everything
+      - name: Install Release library
+        if: matrix.build_type == 'Release'
+        run: cmake --install "${{ runner.workspace }}/build" --prefix "${{ runner.workspace }}/install"
 
-    - name: Test
-      working-directory: ${{runner.workspace}}/build
-      run: ctest -j $($NPROC) --output-on-failure
+      - name: Build Debug tests
+        if: matrix.build_type == 'Debug'
+        run: cmake --build "${{ runner.workspace }}/build" --parallel "$NPROC" --target tests
 
-  thread-sanitizer:
-    name: Ubuntu 24.04 Clang 16 [ThreadSanitizer]
-    runs-on: ubuntu-24.04
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up sccache
-      uses: mozilla-actions/sccache-action@v0.0.11
-      with:
-        version: "v0.18.0"
-
-    - name: Set Up Dependencies
-      run: sudo apt install -y cmake ninja-build pkg-config clang-16
-
-    - name: Create Build Environment
-      run: cmake -E make_directory ${{runner.workspace}}/build-tsan
-
-    - name: Configure CMake
-      working-directory: ${{runner.workspace}}/build-tsan
-      run: cmake ${{runner.workspace}}/logging -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++-16 -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DTHREAD_SANITIZER=ON -G Ninja -DWARNINGS_AS_ERRORS=ON
-
-    - name: Build
-      working-directory: ${{runner.workspace}}/build-tsan
-      run: cmake --build . --parallel 2
-
-    - name: Test
-      working-directory: ${{runner.workspace}}/build-tsan
-      env:
-        TSAN_OPTIONS: halt_on_error=1
-      run: ctest --output-on-failure
+      - name: Run Debug tests
+        if: matrix.build_type == 'Debug'
+        run: ctest --test-dir "${{ runner.workspace }}/build" -j "$NPROC" --output-on-failure
