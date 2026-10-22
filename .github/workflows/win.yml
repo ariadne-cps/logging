@@ -33,10 +33,13 @@ jobs:
 
       - name: Configure CMake
         run: |
+          # /Z7 embeds Debug symbols in .obj files, avoiding parallel MSVC compiler PDB writes.
+          # Keep /Ob0, /Od and /RTC1 from CMake's standard Debug flags.
           cmake -S . -B build -G Ninja `
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
             -DCMAKE_C_COMPILER_LAUNCHER=sccache `
             -DCMAKE_CXX_COMPILER_LAUNCHER=sccache `
+            -DCMAKE_CXX_FLAGS_DEBUG="/Z7 /Ob0 /Od /RTC1" `
             -DWARNINGS_AS_ERRORS=ON
 
       - name: Build Release library
