@@ -14,7 +14,7 @@
  *  (at your option) any later version.
  */
 
-#include "logging/command_line.hpp"
+#include "logging/logging_command_line_interface.hpp"
 #include "logging/logging.hpp"
 #include "macro/testing.hpp"
 
@@ -39,7 +39,7 @@ class TestCommandLine {
     Void test() {
         Logger::instance().attach_thread_registry(&_registry);
 
-        ARIADNE_TEST_CALL(test_contribution())
+        ARIADNE_TEST_CALL(test_inherited_composition())
         ARIADNE_TEST_CALL(test_scheduler())
         ARIADNE_TEST_CALL(test_theme())
         ARIADNE_TEST_CALL(test_verbosity())
@@ -48,24 +48,29 @@ class TestCommandLine {
     }
 
   private:
-    CommandLineInterface make_cli() const {
-        CommandLineInterface cli;
-        cli.add(logging_command_line());
-        return cli;
+    LoggingCommandLineInterface make_cli() const {
+        return LoggingCommandLineInterface();
     }
 
-    Void test_contribution() {
-        CommandLineContribution const contribution=logging_command_line();
-        ARIADNE_TEST_EQUALS(contribution.name(),"logging")
-        ARIADNE_TEST_EQUALS(contribution.parsers().size(),3u)
-        ARIADNE_TEST_EQUALS(contribution.parsers()[0].long_id(),"scheduler")
-        ARIADNE_TEST_EQUALS(contribution.parsers()[1].long_id(),"theme")
-        ARIADNE_TEST_EQUALS(contribution.parsers()[2].long_id(),"verbosity")
+    Void test_inherited_composition() {
+        LoggingCommandLineInterface cli;
+        ARIADNE_TEST_ASSERT(cli.acquire({""}))
+        ARIADNE_TEST_ASSERT(cli.acquire({"","--verbosity","3"}))
+        ARIADNE_TEST_EQUALS(Logger::instance().configuration().verbosity(),3u)
+
+        Bool custom_flag=false;
+        cli.add(CommandLineContribution("custom", {
+            make_unvalued_argument_parser(
+                "x","custom-flag","Exercise inherited contribution support",
+                [&custom_flag] { custom_flag=true; })
+        }));
+        ARIADNE_TEST_ASSERT(cli.acquire({"","--custom-flag","--theme","none"}))
+        ARIADNE_TEST_ASSERT(custom_flag)
     }
 
     Void test_scheduler() {
         _registry.set_threads_registered(false);
-        CommandLineInterface cli=make_cli();
+        LoggingCommandLineInterface cli=make_cli();
 
         ARIADNE_TEST_ASSERT(cli.acquire({"","-s","immediate"}))
         ARIADNE_TEST_ASSERT(cli.acquire({"","--scheduler","blocking"}))
@@ -75,7 +80,7 @@ class TestCommandLine {
     }
 
     Void test_theme() {
-        CommandLineInterface cli=make_cli();
+        LoggingCommandLineInterface cli=make_cli();
 
         ARIADNE_TEST_ASSERT(cli.acquire({"","-t","none"}))
         ARIADNE_TEST_ASSERT(not Logger::instance().configuration().theme().has_style())
@@ -91,7 +96,7 @@ class TestCommandLine {
     }
 
     Void test_verbosity() {
-        CommandLineInterface cli=make_cli();
+        LoggingCommandLineInterface cli=make_cli();
 
         ARIADNE_TEST_ASSERT(cli.acquire({"","-v","5"}))
         ARIADNE_TEST_EQUALS(Logger::instance().configuration().verbosity(),5u)
@@ -106,7 +111,7 @@ class TestCommandLine {
 
     Void test_combined() {
         _registry.set_threads_registered(false);
-        CommandLineInterface cli=make_cli();
+        LoggingCommandLineInterface cli=make_cli();
 
         ARIADNE_TEST_ASSERT(cli.acquire({
             "",
@@ -121,7 +126,7 @@ class TestCommandLine {
     Void test_scheduler_priority() {
         _registry.set_threads_registered(false);
 
-        CommandLineInterface cli=make_cli();
+        LoggingCommandLineInterface cli=make_cli();
         cli.add(CommandLineContribution(
             "test",
             {

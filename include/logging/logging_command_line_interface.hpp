@@ -1,5 +1,5 @@
 /***************************************************************************
- *            logging/command_line.hpp
+ *            logging/logging_command_line_interface.hpp
  *
  *  Copyright  2026  Luca Geretti
  *
@@ -22,17 +22,21 @@
  *  along with Logging.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef ARIADNE_LOGGING_COMMAND_LINE_HPP
-#define ARIADNE_LOGGING_COMMAND_LINE_HPP
+#ifndef ARIADNE_LOGGING_COMMAND_LINE_INTERFACE_HPP
+#define ARIADNE_LOGGING_COMMAND_LINE_INTERFACE_HPP
 
 #include "utility/command_line_interface.hpp"
 
 namespace Ariadne {
 
-//! \brief Command-line arguments configuring the logging module.
-//! \details Contributes scheduler, theme and verbosity options only.
-CommandLineContribution logging_command_line();
+//! \brief Command-line interface configuring the logging module.
+//! \details Adds scheduler, theme and verbosity options and allows derived
+//! interfaces to extend the profile using add().
+class LoggingCommandLineInterface : public CommandLineInterface {
+  public:
+    LoggingCommandLineInterface();
+};
 
 } // namespace Ariadne
 
-#endif // ARIADNE_LOGGING_COMMAND_LINE_HPP
+#endif // ARIADNE_LOGGING_COMMAND_LINE_INTERFACE_HPP

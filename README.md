@@ -16,6 +16,12 @@ It features the following:
 7) Support for holding text on the bottom line, useful for progress indicators (provided in the library) and similar displays
 8) A lot of configuration options for optionally printing entry/exit functions, thread identifiers, etc.
 
+## Command-line interface
+
+`LoggingCommandLineInterface` in `logging/logging_command_line_interface.hpp`
+extends Utility's `CommandLineInterface` with logging scheduler, theme and
+verbosity options. Derived classes may add contributions through `add()`.
+
 ## Build
 
 Clone the repository together with its Git submodules:

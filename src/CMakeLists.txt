@@ -1,4 +1,4 @@
 add_library(LOGGING_SRC OBJECT
-   command_line.cpp
+   logging_command_line_interface.cpp
    logging.cpp
 )

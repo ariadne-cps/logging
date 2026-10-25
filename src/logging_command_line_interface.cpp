@@ -1,5 +1,5 @@
 /***************************************************************************
- *            command_line.cpp
+ *            logging_command_line_interface.cpp
  *
  *  Copyright  2026  Luca Geretti
  *
@@ -22,7 +22,7 @@
  *  along with Logging.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "logging/command_line.hpp"
+#include "logging/logging_command_line_interface.hpp"
 #include "logging/logging.hpp"
 
 namespace Ariadne {
@@ -92,14 +92,14 @@ ArgumentParser make_verbosity_argument_parser() {
 
 } // namespace
 
-CommandLineContribution logging_command_line() {
-    return CommandLineContribution(
+LoggingCommandLineInterface::LoggingCommandLineInterface() {
+    add(CommandLineContribution(
         "logging",
         {
             make_scheduler_argument_parser(),
             make_theme_argument_parser(),
             make_verbosity_argument_parser()
-        });
+        }));
 }
 
 } // namespace Ariadne
