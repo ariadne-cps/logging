@@ -716,11 +716,11 @@ class TestLogging : public Ariadne::Testing::ContextFixture {
     }
 };
 
-int main() {
+int main(int argc, char** argv) {
     Ariadne::Testing::Suite suite("logging");
     suite.add("logger stateful phases", [](Ariadne::Testing::Context& ctx) {
         TestLogging(ctx).test();
     });
-    return Ariadne::Testing::run_suite(suite);
+    return Ariadne::Testing::run_suite(suite, argc, argv);
 }
 

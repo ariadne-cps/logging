@@ -164,10 +164,10 @@ int run_concurrency_scenario() {
     return 0;
 }
 
-int main() {
+int main(int argc, char** argv) {
     Ariadne::Testing::Suite suite("logging-concurrency");
     suite.add("concurrency scenario", [](Ariadne::Testing::Context& ctx) {
         ARIADNE_TESTING_EXPECT_EQUAL_CTX(ctx, run_concurrency_scenario(), 0);
     });
-    return Ariadne::Testing::run_suite(suite);
+    return Ariadne::Testing::run_suite(suite, argc, argv);
 }
