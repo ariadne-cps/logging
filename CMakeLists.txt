@@ -20,6 +20,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
         CHAINS
             "configuration"
             "utility|configuration"
+            "testing|configuration"
     )
 endif()
 
