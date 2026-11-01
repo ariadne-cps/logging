@@ -12,6 +12,7 @@
 #include <thread>
 #include <vector>
 
+#include "ariadne-testing.hpp"
 #include "logging/logging.hpp"
 #include "logging/thread_registry_interface.hpp"
 
@@ -52,7 +53,7 @@ static bool file_contains(std::string const& filename, std::string const& text) 
     return false;
 }
 
-int main() {
+int run_concurrency_scenario() {
     ConcurrentThreadRegistry registry;
     Logger::instance().attach_thread_registry(&registry);
     Logger::instance().configuration().set_theme(TT_THEME_NONE);
@@ -161,4 +162,12 @@ int main() {
     if (count_lines(configuration_filename) != CONFIG_MESSAGES) return 5;
 
     return 0;
+}
+
+int main() {
+    Ariadne::Testing::Suite suite("logging-concurrency");
+    suite.add("concurrency scenario", [](Ariadne::Testing::Context& ctx) {
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(ctx, run_concurrency_scenario(), 0);
+    });
+    return Ariadne::Testing::run_suite(suite);
 }

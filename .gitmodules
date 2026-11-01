@@ -4,3 +4,6 @@
 [submodule "uti"]
 	path = ss/uti
 	url = https://github.com/ariadne-cps/utility
+[submodule "tst"]
+	path = ss/tst
+	url = https://github.com/ariadne-cps/testing

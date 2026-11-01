@@ -32,7 +32,8 @@
 #include "thread.hpp"
 #include "logging/logging.hpp"
 #include "logging/progress_indicator.hpp"
-#include "macro/testing.hpp"
+#include "ariadne-testing.hpp"
+#include <sstream>
 
 using namespace Ariadne;
 
@@ -79,68 +80,69 @@ class ThreadRegistry : public ThreadRegistryInterface {
 class TestLogging {
   private:
     ThreadRegistry _registry;
+    Ariadne::Testing::Context& context;
   public:
-    TestLogging() {
+    explicit TestLogging(Ariadne::Testing::Context& ctx) : context(ctx) {
         Logger::instance().configuration().set_prints_level_on_change_only(false);
     }
 
     void test() {
-        ARIADNE_TEST_CALL(test_thread_registry())
-        ARIADNE_TEST_CALL(test_print_configuration())
-        ARIADNE_TEST_CALL(test_style_branch_combinations())
-        ARIADNE_TEST_CALL(test_parser_branch_boundaries())
-        ARIADNE_TEST_CALL(test_stylecode_adjacency_helper())
-        ARIADNE_TEST_CALL(test_scheduler_noop_registration_paths())
-        ARIADNE_TEST_CALL(test_hold_release_missing_scope())
-        ARIADNE_TEST_CALL(test_remaining_branch_boundaries())
-        ARIADNE_TEST_CALL(test_progress_indicator_accessors())
-        ARIADNE_TEST_CALL(test_window_columns())
-        ARIADNE_TEST_CALL(test_shown_single_print())
-        ARIADNE_TEST_CALL(test_hidden_single_print())
-        ARIADNE_TEST_CALL(test_muted_print())
-        ARIADNE_TEST_CALL(test_use_blocking_scheduler())
-        ARIADNE_TEST_CALL(test_use_nonblocking_scheduler())
-        ARIADNE_TEST_CALL(test_shown_call_function_with_entrance_and_exit())
-        ARIADNE_TEST_CALL(test_hide_call_function_with_entrance_and_exit())
-        ARIADNE_TEST_CALL(test_indents_based_on_level())
-        ARIADNE_TEST_CALL(test_high_level_multiline_hold())
-        ARIADNE_TEST_CALL(test_high_level_hidden_level_and_hold_reprint())
-        ARIADNE_TEST_CALL(test_hold_line())
-        ARIADNE_TEST_CALL(test_hold_line_with_newline_println())
-        ARIADNE_TEST_CALL(test_hold_long_line())
-        ARIADNE_TEST_CALL(test_hold_multiple())
-        ARIADNE_TEST_CALL(test_light_theme())
-        ARIADNE_TEST_CALL(test_dark_theme())
-        ARIADNE_TEST_CALL(test_theme_custom_keyword())
-        ARIADNE_TEST_CALL(test_theme_bgcolor_bold_underline())
-        ARIADNE_TEST_CALL(test_handles_multiline_output())
-        ARIADNE_TEST_CALL(test_discards_newlines_and_indentation())
-        ARIADNE_TEST_CALL(test_redirect())
-        ARIADNE_TEST_CALL(test_multiple_threads_with_blocking_scheduler())
-        ARIADNE_TEST_CALL(test_multiple_threads_with_nonblocking_scheduler())
-        ARIADNE_TEST_CALL(test_register_self_thread())
-        ARIADNE_TEST_CALL(test_printing_policy_with_theme_and_print_level(true,true))
-        ARIADNE_TEST_CALL(test_printing_policy_with_theme_and_print_level(true,false))
-        ARIADNE_TEST_CALL(test_printing_policy_with_theme_and_print_level(false,false))
-        ARIADNE_TEST_CALL(test_printing_policy_with_theme_and_print_level(false,true))
+        do { auto phase_scope=context.scope("phase", "test_thread_registry()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_thread_registry()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_print_configuration()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_print_configuration()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_style_branch_combinations()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_style_branch_combinations()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_parser_branch_boundaries()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_parser_branch_boundaries()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_stylecode_adjacency_helper()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_stylecode_adjacency_helper()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_scheduler_noop_registration_paths()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_scheduler_noop_registration_paths()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_hold_release_missing_scope()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_hold_release_missing_scope()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_remaining_branch_boundaries()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_remaining_branch_boundaries()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_progress_indicator_accessors()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_progress_indicator_accessors()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_window_columns()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_window_columns()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_shown_single_print()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_shown_single_print()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_hidden_single_print()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_hidden_single_print()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_muted_print()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_muted_print()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_use_blocking_scheduler()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_use_blocking_scheduler()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_use_nonblocking_scheduler()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_use_nonblocking_scheduler()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_shown_call_function_with_entrance_and_exit()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_shown_call_function_with_entrance_and_exit()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_hide_call_function_with_entrance_and_exit()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_hide_call_function_with_entrance_and_exit()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_indents_based_on_level()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_indents_based_on_level()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_high_level_multiline_hold()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_high_level_multiline_hold()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_high_level_hidden_level_and_hold_reprint()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_high_level_hidden_level_and_hold_reprint()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_hold_line()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_hold_line()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_hold_line_with_newline_println()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_hold_line_with_newline_println()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_hold_long_line()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_hold_long_line()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_hold_multiple()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_hold_multiple()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_light_theme()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_light_theme()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_dark_theme()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_dark_theme()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_theme_custom_keyword()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_theme_custom_keyword()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_theme_bgcolor_bold_underline()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_theme_bgcolor_bold_underline()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_handles_multiline_output()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_handles_multiline_output()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_discards_newlines_and_indentation()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_discards_newlines_and_indentation()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_redirect()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_redirect()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_multiple_threads_with_blocking_scheduler()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_multiple_threads_with_blocking_scheduler()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_multiple_threads_with_nonblocking_scheduler()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_multiple_threads_with_nonblocking_scheduler()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_register_self_thread()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_register_self_thread()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_printing_policy_with_theme_and_print_level(true,true)"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_printing_policy_with_theme_and_print_level(true,true)); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_printing_policy_with_theme_and_print_level(true,false)"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_printing_policy_with_theme_and_print_level(true,false)); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_printing_policy_with_theme_and_print_level(false,false)"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_printing_policy_with_theme_and_print_level(false,false)); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_printing_policy_with_theme_and_print_level(false,true)"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_printing_policy_with_theme_and_print_level(false,true)); } while(false);
     }
 
     void test_thread_registry() {
-        ARIADNE_TEST_FAIL(Logger::instance().use_immediate_scheduler())
-        ARIADNE_TEST_FAIL(Logger::instance().use_blocking_scheduler())
-        ARIADNE_TEST_FAIL(Logger::instance().use_nonblocking_scheduler())
-        ARIADNE_TEST_FAIL(Logger::instance().register_thread(std::this_thread::get_id(),"no-registry"))
-        ARIADNE_TEST_FAIL(Logger::instance().register_self_thread("no-registry",1))
-        ARIADNE_TEST_FAIL(Logger::instance().unregister_thread(std::this_thread::get_id()))
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().use_immediate_scheduler());
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().use_blocking_scheduler());
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().use_nonblocking_scheduler());
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().register_thread(std::this_thread::get_id(),"no-registry"));
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().register_self_thread("no-registry",1));
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().unregister_thread(std::this_thread::get_id()));
         Logger::instance().attach_thread_registry(&_registry);
-        ARIADNE_TEST_FAIL(Logger::instance().attach_thread_registry(&_registry))
-        ARIADNE_TEST_EXECUTE(Logger::instance().use_immediate_scheduler())
-        ARIADNE_TEST_EXECUTE(Logger::instance().use_blocking_scheduler())
-        ARIADNE_TEST_EXECUTE(Logger::instance().use_nonblocking_scheduler())
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().attach_thread_registry(&_registry));
+        Logger::instance().use_immediate_scheduler();
+        Logger::instance().use_blocking_scheduler();
+        Logger::instance().use_nonblocking_scheduler();
         _registry.set_threads_registered(1);
-        ARIADNE_TEST_FAIL(Logger::instance().use_immediate_scheduler())
-        ARIADNE_TEST_FAIL(Logger::instance().use_blocking_scheduler())
-        ARIADNE_TEST_FAIL(Logger::instance().use_nonblocking_scheduler())
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().use_immediate_scheduler());
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().use_blocking_scheduler());
+        ARIADNE_TESTING_EXPECT_EXCEPTION_CTX(context, Logger::instance().use_nonblocking_scheduler());
         _registry.set_threads_registered(0);
     }
 
@@ -151,15 +153,15 @@ class TestLogging {
 
         std::ostringstream invalid_policy;
         invalid_policy << static_cast<ThreadNamePrintingPolicy>(255);
-        ARIADNE_TEST_EQUALS(invalid_policy.str().compare("NEVER"), 0);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, invalid_policy.str().compare("NEVER"), 0);;
     }
 
     void test_style_branch_combinations() {
-        ARIADNE_TEST_ASSERT(!TT_STYLE_NONE.is_styled());
-        ARIADNE_TEST_ASSERT(TerminalTextStyle(1,0,false,false).is_styled());
-        ARIADNE_TEST_ASSERT(TerminalTextStyle(0,1,false,false).is_styled());
-        ARIADNE_TEST_ASSERT(TerminalTextStyle(0,0,true,false).is_styled());
-        ARIADNE_TEST_ASSERT(TerminalTextStyle(0,0,false,true).is_styled());
+        ARIADNE_TESTING_PROVE_CTX(context, !TT_STYLE_NONE.is_styled());;
+        ARIADNE_TESTING_PROVE_CTX(context, TerminalTextStyle(1,0,false,false).is_styled());;
+        ARIADNE_TESTING_PROVE_CTX(context, TerminalTextStyle(0,1,false,false).is_styled());;
+        ARIADNE_TESTING_PROVE_CTX(context, TerminalTextStyle(0,0,true,false).is_styled());;
+        ARIADNE_TESTING_PROVE_CTX(context, TerminalTextStyle(0,0,false,true).is_styled());;
 
         using ThemeField = TerminalTextStyle TerminalTextTheme::*;
         const std::array<ThemeField,14> fields = {
@@ -179,11 +181,11 @@ class TestLogging {
             &TerminalTextTheme::keyword
         };
 
-        ARIADNE_TEST_ASSERT(!TT_THEME_NONE.has_style());
+        ARIADNE_TESTING_PROVE_CTX(context, !TT_THEME_NONE.has_style());;
         for (auto field : fields) {
             TerminalTextTheme theme;
             theme.*field = TerminalTextStyle(1,0,false,false);
-            ARIADNE_TEST_ASSERT(theme.has_style());
+            ARIADNE_TESTING_PROVE_CTX(context, theme.has_style());;
         }
     }
 
@@ -217,18 +219,18 @@ class TestLogging {
     }
 
     void test_stylecode_adjacency_helper() {
-        ARIADNE_TEST_ASSERT(!isalphanumeric_withstylecodes("[",0));
-        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes("A",0));
-        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes("1",0));
-        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes("m",0));
+        ARIADNE_TESTING_PROVE_CTX(context, !isalphanumeric_withstylecodes("[",0));;
+        ARIADNE_TESTING_PROVE_CTX(context, isalphanumeric_withstylecodes("A",0));;
+        ARIADNE_TESTING_PROVE_CTX(context, isalphanumeric_withstylecodes("1",0));;
+        ARIADNE_TESTING_PROVE_CTX(context, isalphanumeric_withstylecodes("m",0));;
 
         std::string alpha_reset = std::string("A\033[0m");
         std::string digit_reset = std::string("1\033[0m");
         std::string punctuation_reset = std::string("[\033[0m");
 
-        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes(alpha_reset,alpha_reset.size()-1));
-        ARIADNE_TEST_ASSERT(isalphanumeric_withstylecodes(digit_reset,digit_reset.size()-1));
-        ARIADNE_TEST_ASSERT(!isalphanumeric_withstylecodes(punctuation_reset,punctuation_reset.size()-1));
+        ARIADNE_TESTING_PROVE_CTX(context, isalphanumeric_withstylecodes(alpha_reset,alpha_reset.size()-1));;
+        ARIADNE_TESTING_PROVE_CTX(context, isalphanumeric_withstylecodes(digit_reset,digit_reset.size()-1));;
+        ARIADNE_TESTING_PROVE_CTX(context, !isalphanumeric_withstylecodes(punctuation_reset,punctuation_reset.size()-1));;
     }
 
     void test_scheduler_noop_registration_paths() {
@@ -305,54 +307,54 @@ class TestLogging {
 
     void test_progress_indicator_accessors() {
         ProgressIndicator indicator(10.0);
-        ARIADNE_TEST_EQUALS(indicator.final_value(),10.0);
-        ARIADNE_TEST_EQUALS(indicator.current_value(),0.0);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, indicator.final_value(), 10.0);;
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, indicator.current_value(), 0.0);;
         indicator.update_current(4.0);
-        ARIADNE_TEST_EQUALS(indicator.current_value(),4.0);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, indicator.current_value(), 4.0);;
         indicator.update_final(8.0);
-        ARIADNE_TEST_EQUALS(indicator.final_value(),8.0);
-        ARIADNE_TEST_EQUALS(indicator.percentage(),50u);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, indicator.final_value(), 8.0);;
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, indicator.percentage(), 50u);;
     }
 
     void test_window_columns() {
 #ifndef _WIN32
         int master_fd = posix_openpt(O_RDWR);
-        ARIADNE_TEST_ASSERT(master_fd >= 0);
+        ARIADNE_TESTING_PROVE_CTX(context, master_fd >= 0);;
         if (master_fd < 0) return;
-        ARIADNE_TEST_EQUALS(grantpt(master_fd),0);
-        ARIADNE_TEST_EQUALS(unlockpt(master_fd),0);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, grantpt(master_fd), 0);;
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, unlockpt(master_fd), 0);;
         char* slave_name = ptsname(master_fd);
-        ARIADNE_TEST_ASSERT(slave_name != nullptr);
+        ARIADNE_TESTING_PROVE_CTX(context, slave_name != nullptr);;
         if (slave_name == nullptr) { close(master_fd); return; }
 
         int slave_fd = open(slave_name,O_RDWR);
-        ARIADNE_TEST_ASSERT(slave_fd >= 0);
+        ARIADNE_TESTING_PROVE_CTX(context, slave_fd >= 0);;
         if (slave_fd < 0) { close(master_fd); return; }
 
         int saved_stdout = dup(STDOUT_FILENO);
-        ARIADNE_TEST_ASSERT(saved_stdout >= 0);
+        ARIADNE_TESTING_PROVE_CTX(context, saved_stdout >= 0);;
         if (saved_stdout < 0) { close(slave_fd); close(master_fd); return; }
 
         struct winsize ws {};
         ws.ws_col = 123;
-        ARIADNE_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
-        ARIADNE_TEST_EQUALS(dup2(slave_fd,STDOUT_FILENO),STDOUT_FILENO);
-        ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),123u);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, ioctl(slave_fd,TIOCSWINSZ,&ws), 0);;
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, dup2(slave_fd,STDOUT_FILENO), STDOUT_FILENO);;
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().get_window_columns(), 123u);;
 
         ws.ws_col = 600;
-        ARIADNE_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
-        ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, ioctl(slave_fd,TIOCSWINSZ,&ws), 0);;
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().get_window_columns(), 80u);;
 
         ws.ws_col = 0;
-        ARIADNE_TEST_EQUALS(ioctl(slave_fd,TIOCSWINSZ,&ws),0);
-        ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, ioctl(slave_fd,TIOCSWINSZ,&ws), 0);;
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().get_window_columns(), 80u);;
 
-        ARIADNE_TEST_EQUALS(dup2(saved_stdout,STDOUT_FILENO),STDOUT_FILENO);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, dup2(saved_stdout,STDOUT_FILENO), STDOUT_FILENO);;
         close(saved_stdout);
         close(slave_fd);
         close(master_fd);
 #else
-        ARIADNE_TEST_EQUALS(Logger::instance().get_window_columns(),80u);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().get_window_columns(), 80u);;
 #endif
     }
 
@@ -475,7 +477,7 @@ class TestLogging {
 
     void test_handles_multiline_output() {
         SizeType num_cols = Logger::instance().get_window_columns();
-        ARIADNE_PRINT_TEST_COMMENT("Number of window columns: " << num_cols)
+        do { std::ostringstream diagnostic_stream; diagnostic_stream << "Number of window columns: " << num_cols; context.note(diagnostic_stream.str()); } while(false);
         Logger::instance().use_immediate_scheduler();
         Logger::instance().configuration().set_verbosity(2);
         Logger::instance().configuration().set_handles_multiline_output(true);
@@ -631,7 +633,7 @@ class TestLogging {
             }
             file.close();
         }
-        ARIADNE_TEST_EQUALS(count,3);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, count, 3);;
     }
 
     void test_multiple_threads_with_blocking_scheduler() {
@@ -640,7 +642,7 @@ class TestLogging {
         Logger::instance().configuration().set_theme(TT_THEME_DARK);
         Logger::instance().configuration().set_thread_name_printing_policy(ThreadNamePrintingPolicy::BEFORE);
         LOGGING_PRINTLN("Printing on the " << Logger::instance().current_thread_name() << " thread without other threads");
-        ARIADNE_TEST_EQUALS(Logger::instance().cached_last_printed_thread_name().compare("main"), 0);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().cached_last_printed_thread_name().compare("main"), 0);;
 
         std::string thread1_name;
         std::string thread2_name;
@@ -656,8 +658,8 @@ class TestLogging {
             LOGGING_PRINTLN("Printing again on the main thread, but with other threads");
         }
 
-        ARIADNE_TEST_EQUALS(thread1_name.compare("thr1"), 0);
-        ARIADNE_TEST_EQUALS(thread2_name.compare("thr2"), 0);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, thread1_name.compare("thr1"), 0);;
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, thread2_name.compare("thr2"), 0);;
     }
 
     void test_multiple_threads_with_nonblocking_scheduler() {
@@ -683,7 +685,7 @@ class TestLogging {
         Logger::instance().configuration().set_theme(TT_THEME_DARK);
         Logger::instance().configuration().set_thread_name_printing_policy(ThreadNamePrintingPolicy::BEFORE);
         LOGGING_PRINTLN("Printing on the " << Logger::instance().current_thread_name() << " thread without other threads");
-        ARIADNE_TEST_EQUALS(Logger::instance().cached_last_printed_thread_name().compare("main"), 0);
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().cached_last_printed_thread_name().compare("main"), 0);;
         std::thread::id thread_id;
         std::thread thread1([&thread_id] { thread_id = std::this_thread::get_id(); Logger::instance().register_self_thread("thr1", 1); print_something1(); });
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -692,7 +694,7 @@ class TestLogging {
     }
 
     void test_printing_policy_with_theme_and_print_level(bool use_theme, bool print_level) {
-        ARIADNE_PRINT_TEST_COMMENT("Policies: " << ThreadNamePrintingPolicy::BEFORE << " " << ThreadNamePrintingPolicy::AFTER << " " << ThreadNamePrintingPolicy::NEVER)
+        do { std::ostringstream diagnostic_stream; diagnostic_stream << "Policies: " << ThreadNamePrintingPolicy::BEFORE << " " << ThreadNamePrintingPolicy::AFTER << " " << ThreadNamePrintingPolicy::NEVER; context.note(diagnostic_stream.str()); } while(false);
         Logger::instance().use_immediate_scheduler();
         Logger::instance().use_blocking_scheduler();
         Logger::instance().configuration().set_verbosity(3);
@@ -716,9 +718,10 @@ class TestLogging {
 };
 
 int main() {
-
-    TestLogging().test();
-
-    return ARIADNE_TEST_FAILURES;
+    Ariadne::Testing::Suite suite("logging");
+    suite.add("logger stateful phases", [](Ariadne::Testing::Context& ctx) {
+        TestLogging(ctx).test();
+    });
+    return Ariadne::Testing::run_suite(suite);
 }
 

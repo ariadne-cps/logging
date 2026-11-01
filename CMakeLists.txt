@@ -20,7 +20,6 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
         CHAINS
             "configuration"
             "utility|configuration"
-            "utility|macro|configuration"
     )
 endif()
 

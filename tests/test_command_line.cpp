@@ -16,7 +16,7 @@
 
 #include "logging/logging_command_line_interface.hpp"
 #include "logging/logging.hpp"
-#include "macro/testing.hpp"
+#include "ariadne-testing.hpp"
 
 using namespace Ariadne;
 
@@ -35,16 +35,18 @@ class CommandLineThreadRegistry : public ThreadRegistryInterface {
 };
 
 class TestCommandLine {
+    Ariadne::Testing::Context& context;
   public:
+    explicit TestCommandLine(Ariadne::Testing::Context& ctx) : context(ctx) { }
     Void test() {
         Logger::instance().attach_thread_registry(&_registry);
 
-        ARIADNE_TEST_CALL(test_inherited_composition())
-        ARIADNE_TEST_CALL(test_scheduler())
-        ARIADNE_TEST_CALL(test_theme())
-        ARIADNE_TEST_CALL(test_verbosity())
-        ARIADNE_TEST_CALL(test_combined())
-        ARIADNE_TEST_CALL(test_scheduler_priority())
+        do { auto phase_scope=context.scope("phase", "test_inherited_composition()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_inherited_composition()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_scheduler()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_scheduler()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_theme()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_theme()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_verbosity()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_verbosity()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_combined()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_combined()); } while(false);
+        do { auto phase_scope=context.scope("phase", "test_scheduler_priority()"); ARIADNE_TESTING_EXPECT_NO_THROW_CTX(context, test_scheduler_priority()); } while(false);
     }
 
   private:
@@ -54,9 +56,9 @@ class TestCommandLine {
 
     Void test_inherited_composition() {
         LoggingCommandLineInterface cli;
-        ARIADNE_TEST_ASSERT(cli.acquire({""}))
-        ARIADNE_TEST_ASSERT(cli.acquire({"","--verbosity","3"}))
-        ARIADNE_TEST_EQUALS(Logger::instance().configuration().verbosity(),3u)
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({""}));
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","--verbosity","3"}));
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().configuration().verbosity(), 3u);
 
         Bool custom_flag=false;
         cli.add(CommandLineContribution("custom", {
@@ -64,63 +66,63 @@ class TestCommandLine {
                 "x","custom-flag","Exercise inherited contribution support",
                 [&custom_flag] { custom_flag=true; })
         }));
-        ARIADNE_TEST_ASSERT(cli.acquire({"","--custom-flag","--theme","none"}))
-        ARIADNE_TEST_ASSERT(custom_flag)
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","--custom-flag","--theme","none"}));
+        ARIADNE_TESTING_PROVE_CTX(context, custom_flag);
     }
 
     Void test_scheduler() {
         _registry.set_threads_registered(false);
         LoggingCommandLineInterface cli=make_cli();
 
-        ARIADNE_TEST_ASSERT(cli.acquire({"","-s","immediate"}))
-        ARIADNE_TEST_ASSERT(cli.acquire({"","--scheduler","blocking"}))
-        ARIADNE_TEST_ASSERT(cli.acquire({"","-s","nonblocking"}))
-        ARIADNE_TEST_ASSERT(not cli.acquire({"","-s","wrong"}))
-        ARIADNE_TEST_ASSERT(not cli.acquire({"","-s"}))
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","-s","immediate"}));
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","--scheduler","blocking"}));
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","-s","nonblocking"}));
+        ARIADNE_TESTING_PROVE_CTX(context, not cli.acquire({"","-s","wrong"}));
+        ARIADNE_TESTING_PROVE_CTX(context, not cli.acquire({"","-s"}));
     }
 
     Void test_theme() {
         LoggingCommandLineInterface cli=make_cli();
 
-        ARIADNE_TEST_ASSERT(cli.acquire({"","-t","none"}))
-        ARIADNE_TEST_ASSERT(not Logger::instance().configuration().theme().has_style())
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","-t","none"}));
+        ARIADNE_TESTING_PROVE_CTX(context, not Logger::instance().configuration().theme().has_style());
 
-        ARIADNE_TEST_ASSERT(cli.acquire({"","--theme","light"}))
-        ARIADNE_TEST_ASSERT(Logger::instance().configuration().theme().has_style())
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","--theme","light"}));
+        ARIADNE_TESTING_PROVE_CTX(context, Logger::instance().configuration().theme().has_style());
 
-        ARIADNE_TEST_ASSERT(cli.acquire({"","-t","dark"}))
-        ARIADNE_TEST_ASSERT(Logger::instance().configuration().theme().has_style())
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","-t","dark"}));
+        ARIADNE_TESTING_PROVE_CTX(context, Logger::instance().configuration().theme().has_style());
 
-        ARIADNE_TEST_ASSERT(not cli.acquire({"","-t","wrong"}))
-        ARIADNE_TEST_ASSERT(not cli.acquire({"","-t"}))
+        ARIADNE_TESTING_PROVE_CTX(context, not cli.acquire({"","-t","wrong"}));
+        ARIADNE_TESTING_PROVE_CTX(context, not cli.acquire({"","-t"}));
     }
 
     Void test_verbosity() {
         LoggingCommandLineInterface cli=make_cli();
 
-        ARIADNE_TEST_ASSERT(cli.acquire({"","-v","5"}))
-        ARIADNE_TEST_EQUALS(Logger::instance().configuration().verbosity(),5u)
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","-v","5"}));
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().configuration().verbosity(), 5u);
 
-        ARIADNE_TEST_ASSERT(cli.acquire({"","--verbosity","0"}))
-        ARIADNE_TEST_EQUALS(Logger::instance().configuration().verbosity(),0u)
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({"","--verbosity","0"}));
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().configuration().verbosity(), 0u);
 
-        ARIADNE_TEST_ASSERT(not cli.acquire({"","-v","-2"}))
-        ARIADNE_TEST_ASSERT(not cli.acquire({"","-v","q"}))
-        ARIADNE_TEST_ASSERT(not cli.acquire({"","-v"}))
+        ARIADNE_TESTING_PROVE_CTX(context, not cli.acquire({"","-v","-2"}));
+        ARIADNE_TESTING_PROVE_CTX(context, not cli.acquire({"","-v","q"}));
+        ARIADNE_TESTING_PROVE_CTX(context, not cli.acquire({"","-v"}));
     }
 
     Void test_combined() {
         _registry.set_threads_registered(false);
         LoggingCommandLineInterface cli=make_cli();
 
-        ARIADNE_TEST_ASSERT(cli.acquire({
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({
             "",
             "--verbosity","4",
             "--theme","none",
             "--scheduler","immediate"
-        }))
-        ARIADNE_TEST_EQUALS(Logger::instance().configuration().verbosity(),4u)
-        ARIADNE_TEST_ASSERT(not Logger::instance().configuration().theme().has_style())
+        }));
+        ARIADNE_TESTING_EXPECT_EQUAL_CTX(context, Logger::instance().configuration().verbosity(), 4u);
+        ARIADNE_TESTING_PROVE_CTX(context, not Logger::instance().configuration().theme().has_style());
     }
 
     Void test_scheduler_priority() {
@@ -140,12 +142,12 @@ class TestCommandLine {
         // Although the test action appears first on the command line, the
         // scheduler action must run first because changing scheduler is
         // forbidden once a thread is registered.
-        ARIADNE_TEST_ASSERT(cli.acquire({
+        ARIADNE_TESTING_PROVE_CTX(context, cli.acquire({
             "",
             "--register-thread",
             "--scheduler","blocking"
-        }))
-        ARIADNE_TEST_ASSERT(_registry.has_threads_registered())
+        }));
+        ARIADNE_TESTING_PROVE_CTX(context, _registry.has_threads_registered());
 
         _registry.set_threads_registered(false);
         Logger::instance().use_nonblocking_scheduler();
@@ -155,7 +157,10 @@ class TestCommandLine {
     CommandLineThreadRegistry _registry;
 };
 
-Int main() {
-    TestCommandLine().test();
-    return ARIADNE_TEST_FAILURES;
+int main() {
+    Ariadne::Testing::Suite suite("logging-command-line");
+    suite.add("command line", [](Ariadne::Testing::Context& ctx) {
+        TestCommandLine(ctx).test();
+    });
+    return Ariadne::Testing::run_suite(suite);
 }
