@@ -37,37 +37,6 @@
 
 using namespace Ariadne;
 
-void sample_function() {
-    LOGGING_SCOPE_CREATE
-    LOGGING_PRINTLN("val=inf, x0=2.0^3*1.32424242432423[2,3], y>[0.1:0.2] (z={0:1}), 1, x0, x11, true@1.")
-}
-
-void sample_printhold_simple_loop(std::string txt, SizeType u) {
-    LOGGING_SCOPE_CREATE
-    for (unsigned int i=0; i<3; ++i) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(u));
-        LOGGING_SCOPE_PRINTHOLD(txt<<"@"<<i)
-    }
-}
-
-void sample_printhold_nested_loop(std::string txt, SizeType u) {
-    LOGGING_SCOPE_CREATE
-    for (unsigned int i=0; i<3; ++i) {
-        sample_printhold_simple_loop("internal",u);
-        std::this_thread::sleep_for(std::chrono::milliseconds(u));
-        LOGGING_SCOPE_PRINTHOLD(txt<<"@"<<i)
-    }
-}
-
-void print_something1() {
-    LOGGING_PRINTLN("This is a call from thread id " << std::this_thread::get_id() << " named '" << Logger::instance().current_thread_name() << "'")
-}
-
-void print_something2() {
-    LOGGING_SCOPE_CREATE
-    LOGGING_PRINTLN("This is a call from thread id " << std::this_thread::get_id() << " named '" << Logger::instance().current_thread_name() << "'")
-}
-
 class ThreadRegistry : public ThreadRegistryInterface {
   public:
     ThreadRegistry() : _threads_registered(0) { }
@@ -79,6 +48,39 @@ class ThreadRegistry : public ThreadRegistryInterface {
 
 class TestLogging : public Ariadne::Testing::ContextFixture {
   private:
+static void sample_function() {
+    LOGGING_SCOPE_CREATE
+    LOGGING_PRINTLN("val=inf, x0=2.0^3*1.32424242432423[2,3], y>[0.1:0.2] (z={0:1}), 1, x0, x11, true@1.")
+}
+
+static void sample_printhold_simple_loop(std::string txt, SizeType u) {
+    LOGGING_SCOPE_CREATE
+    for (unsigned int i=0; i<3; ++i) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(u));
+        LOGGING_SCOPE_PRINTHOLD(txt<<"@"<<i)
+    }
+}
+
+static void sample_printhold_nested_loop(std::string txt, SizeType u) {
+    LOGGING_SCOPE_CREATE
+    for (unsigned int i=0; i<3; ++i) {
+        sample_printhold_simple_loop("internal",u);
+        std::this_thread::sleep_for(std::chrono::milliseconds(u));
+        LOGGING_SCOPE_PRINTHOLD(txt<<"@"<<i)
+    }
+}
+
+static void print_something1() {
+    LOGGING_PRINTLN("This is a call from thread id " << std::this_thread::get_id() << " named '" << Logger::instance().current_thread_name() << "'")
+}
+
+static void print_something2() {
+    LOGGING_SCOPE_CREATE
+    LOGGING_PRINTLN("This is a call from thread id " << std::this_thread::get_id() << " named '" << Logger::instance().current_thread_name() << "'")
+}
+
+
+
     ThreadRegistry _registry;
   public:
     explicit TestLogging(Ariadne::Testing::Context& ctx) : ContextFixture(ctx) {
@@ -718,9 +720,7 @@ class TestLogging : public Ariadne::Testing::ContextFixture {
 
 int main(int argc, char** argv) {
     Ariadne::Testing::Suite suite("logging");
-    suite.add("logger stateful phases", [](Ariadne::Testing::Context& ctx) {
-        TestLogging(ctx).test();
-    });
+    Ariadne::Testing::add_fixture_test<TestLogging>(suite, "logger stateful phases", &TestLogging::test);
     return Ariadne::Testing::run_suite(suite, argc, argv);
 }
 

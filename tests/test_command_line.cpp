@@ -158,8 +158,6 @@ class TestCommandLine : public Ariadne::Testing::ContextFixture {
 
 int main(int argc, char** argv) {
     Ariadne::Testing::Suite suite("logging-command-line");
-    suite.add("command line", [](Ariadne::Testing::Context& ctx) {
-        TestCommandLine(ctx).test();
-    });
+    Ariadne::Testing::add_fixture_test<TestCommandLine>(suite, "command line", &TestCommandLine::test);
     return Ariadne::Testing::run_suite(suite, argc, argv);
 }

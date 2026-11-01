@@ -36,6 +36,13 @@ class ConcurrentThreadRegistry : public ThreadRegistryInterface {
     std::atomic<unsigned int> _registered{0};
 };
 
+class TestConcurrency : public Ariadne::Testing::ContextFixture {
+  public:
+    using ContextFixture::ContextFixture;
+    void test_scenario() {
+        ARIADNE_TESTING_EXPECT_EQUAL(run_concurrency_scenario(), 0);
+    }
+  private:
 static unsigned int count_lines(std::string const& filename) {
     std::ifstream file(filename);
     unsigned int count = 0;
@@ -164,10 +171,11 @@ int run_concurrency_scenario() {
     return 0;
 }
 
+
+};
+
 int main(int argc, char** argv) {
     Ariadne::Testing::Suite suite("logging-concurrency");
-    suite.add("concurrency scenario", [](Ariadne::Testing::Context& ctx) {
-        ARIADNE_TESTING_EXPECT_EQUAL_CTX(ctx, run_concurrency_scenario(), 0);
-    });
+    Ariadne::Testing::add_fixture_test<TestConcurrency>(suite, "concurrency scenario", &TestConcurrency::test_scenario);
     return Ariadne::Testing::run_suite(suite, argc, argv);
 }
