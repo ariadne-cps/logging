@@ -9,7 +9,7 @@
 [![Coverage Status](https://github.com/ariadne-cps/logging/actions/workflows/coverage.yml/badge.svg)](https://github.com/ariadne-cps/logging/actions/workflows/coverage.yml)
 [![codecov](https://codecov.io/gh/ariadne-cps/logging/branch/main/graph/badge.svg)](https://codecov.io/gh/ariadne-cps/logging)
 
-Logging is a library for concurrent logging.
+Logging is a library for concurrent logging. Although independently maintained and usable, this repository is also part of the [Ariadne repository structure](https://github.com/ariadne-cps/ariadne/blob/main/doc/structure.md).
 It features the following:
 1) Print from different threads with no overlapping of the output
 2) Support for automatic registration/deregistration of threads (with example Thread implementation provided in the tests)
