@@ -50,6 +50,7 @@ endif()
 ariadne_register_public_headers(
     TARGET logging
     DIRECTORIES "${PROJECT_SOURCE_DIR}/include/logging"
+    FILES "${PROJECT_SOURCE_DIR}/include/ariadne-logging.hpp"
 )
 
 setup_project_library(
