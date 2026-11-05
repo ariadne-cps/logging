@@ -15,7 +15,16 @@ if(NOT TARGET ariadne-build)
     include("${CMAKE_CURRENT_SOURCE_DIR}/ss/bui/cmake/ProjectOptions.cmake")
 endif()
 
-# Keep other dependency commit checks when their gitlinks converge.
+if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
+    require_same_dependency_commit(Build CHAINS
+        "build"
+        "utility|build"
+        "testing|build"
+        "utility|testing|build")
+    require_same_dependency_commit(Testing CHAINS
+        "testing"
+        "utility|testing")
+endif()
 
 
 setup_project()
