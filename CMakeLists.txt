@@ -22,8 +22,7 @@ if(EXISTS "${PROJECT_SOURCE_DIR}/.git")
     require_same_dependency_commit(Build CHAINS
         "build"
         "utility|build"
-        "testing|build"
-        "utility|testing|build")
+        "testing|build")
 endif()
 
 
