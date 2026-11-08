@@ -129,9 +129,10 @@ static void print_something2() {
     }
 
     void test_thread_registry() {
-        ARIADNE_TESTING_EXPECT_EXCEPTION( Logger::instance().use_immediate_scheduler());
-        ARIADNE_TESTING_EXPECT_EXCEPTION( Logger::instance().use_blocking_scheduler());
-        ARIADNE_TESTING_EXPECT_EXCEPTION( Logger::instance().use_nonblocking_scheduler());
+        // Scheduler selection does not require a registry when no workers exist.
+        ARIADNE_TESTING_EXPECT_NO_THROW( Logger::instance().use_immediate_scheduler());
+        ARIADNE_TESTING_EXPECT_NO_THROW( Logger::instance().use_blocking_scheduler());
+        ARIADNE_TESTING_EXPECT_NO_THROW( Logger::instance().use_nonblocking_scheduler());
         ARIADNE_TESTING_EXPECT_EXCEPTION( Logger::instance().register_thread(std::this_thread::get_id(),"no-registry"));
         ARIADNE_TESTING_EXPECT_EXCEPTION( Logger::instance().register_self_thread("no-registry",1));
         ARIADNE_TESTING_EXPECT_EXCEPTION( Logger::instance().unregister_thread(std::this_thread::get_id()));
