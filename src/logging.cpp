@@ -771,24 +771,27 @@ bool Logger::has_thread_registry_attached() const {
 
 void Logger::use_immediate_scheduler() {
     std::unique_lock<std::shared_mutex> lock(_scheduler_mutex);
-    if (not has_thread_registry_attached()) throw LoggerNoThreadRegistryException();
-    if (_thread_registry->has_threads_registered()) throw LoggerSchedulerChangeWithRegisteredThreadsException();
+    // Standalone logging clients can change schedulers without a thread registry.
+    if (_thread_registry != nullptr and _thread_registry->has_threads_registered())
+        throw LoggerSchedulerChangeWithRegisteredThreadsException();
     _scheduler->terminate();
     _scheduler.reset(new ImmediateLoggerScheduler());
 }
 
 void Logger::use_blocking_scheduler() {
     std::unique_lock<std::shared_mutex> lock(_scheduler_mutex);
-    if (not has_thread_registry_attached()) throw LoggerNoThreadRegistryException();
-    if (_thread_registry->has_threads_registered()) throw LoggerSchedulerChangeWithRegisteredThreadsException();
+    // Standalone logging clients can change schedulers without a thread registry.
+    if (_thread_registry != nullptr and _thread_registry->has_threads_registered())
+        throw LoggerSchedulerChangeWithRegisteredThreadsException();
     _scheduler->terminate();
     _scheduler.reset(new BlockingLoggerScheduler());
 }
 
 void Logger::use_nonblocking_scheduler() {
     std::unique_lock<std::shared_mutex> lock(_scheduler_mutex);
-    if (not has_thread_registry_attached()) throw LoggerNoThreadRegistryException();
-    if (_thread_registry->has_threads_registered()) throw LoggerSchedulerChangeWithRegisteredThreadsException();
+    // Standalone logging clients can change schedulers without a thread registry.
+    if (_thread_registry != nullptr and _thread_registry->has_threads_registered())
+        throw LoggerSchedulerChangeWithRegisteredThreadsException();
     _scheduler->terminate();
     _scheduler.reset(new NonblockingLoggerScheduler());
 }

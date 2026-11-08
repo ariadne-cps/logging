@@ -4,6 +4,7 @@ set(UNIT_TESTS
     test_command_line
     test_logging
     test_concurrency
+    test_unattached_scheduler
 )
 
 foreach(TEST ${UNIT_TESTS})
