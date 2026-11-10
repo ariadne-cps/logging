@@ -25,18 +25,18 @@
 #ifndef ARIADNE_LOGGING_LOGGING_HPP
 #define ARIADNE_LOGGING_LOGGING_HPP
 
-#include <iostream>
-#include <fstream>
 #include <cstring>
-#include <utility>
-#include <vector>
-#include <queue>
+#include <fstream>
+#include <iostream>
 #include <map>
+#include <memory>
+#include <mutex>
+#include <queue>
+#include <shared_mutex>
 #include <sstream>
 #include <thread>
-#include <mutex>
-#include <shared_mutex>
-#include <memory>
+#include <utility>
+#include <vector>
 
 #include "logging/thread_registry_interface.hpp"
 
@@ -53,34 +53,76 @@
 // Automatic level increase/decrease in a scope; meant to be used once within a function, at top scope; necessary for print holding.
 #define LOGGING_SCOPE_CREATE auto logscopemanager = LogScopeManager(LOGGING_PRETTY_FUNCTION);
 // Managed level increase/decrease around the function fn; if the function throws, manual decrease of the proper level is required.
-#define LOGGING_RUN_AT(level,fn) Logger::instance().increase_level(level); fn; Logger::instance().decrease_level(level);
+#define LOGGING_RUN_AT(level, fn)             \
+    Logger::instance().increase_level(level); \
+    fn;                                       \
+    Logger::instance().decrease_level(level);
 // Mute the logger for the function fn; if the function throws, manual decrease of the proper level is required.
-#define LOGGING_RUN_MUTED(fn) Logger::instance().mute_increase_level(); fn; Logger::instance().mute_decrease_level();
+#define LOGGING_RUN_MUTED(fn)                 \
+    Logger::instance().mute_increase_level(); \
+    fn;                                       \
+    Logger::instance().mute_decrease_level();
 // Print one line at the current level; the text shouldn't have carriage returns, but for efficiency purposes this is not checked.
-#define LOGGING_PRINTLN(text) { if (!Logger::instance().is_muted_at(0)) { std::ostringstream logger_stream; logger_stream << std::boolalpha << text; Logger::instance().println(0,logger_stream.str()); } }
+#define LOGGING_PRINTLN(text)                                   \
+    {                                                           \
+        if (!Logger::instance().is_muted_at(0)) {               \
+            std::ostringstream logger_stream;                   \
+            logger_stream << std::boolalpha << text;            \
+            Logger::instance().println(0, logger_stream.str()); \
+        }                                                       \
+    }
 // Print one line at an increased level with respect to the current one; the text shouldn't have carriage returns, but for efficiency purposes this is not checked.
-#define LOGGING_PRINTLN_AT(level,text) { if (!Logger::instance().is_muted_at(level)) { std::ostringstream logger_stream; logger_stream << std::boolalpha << text; Logger::instance().println(level,logger_stream.str()); } }
+#define LOGGING_PRINTLN_AT(level, text)                             \
+    {                                                               \
+        if (!Logger::instance().is_muted_at(level)) {               \
+            std::ostringstream logger_stream;                       \
+            logger_stream << std::boolalpha << text;                \
+            Logger::instance().println(level, logger_stream.str()); \
+        }                                                           \
+    }
 // Print variable in one line at the current level, using the formatting convention.
-#define LOGGING_PRINTLN_VAR(var) { if (!Logger::instance().is_muted_at(0)) { std::ostringstream logger_stream; logger_stream << std::boolalpha << #var << " = " << var; Logger::instance().println(0,logger_stream.str()); } }
+#define LOGGING_PRINTLN_VAR(var)                                     \
+    {                                                                \
+        if (!Logger::instance().is_muted_at(0)) {                    \
+            std::ostringstream logger_stream;                        \
+            logger_stream << std::boolalpha << #var << " = " << var; \
+            Logger::instance().println(0, logger_stream.str());      \
+        }                                                            \
+    }
 // Print variable in one line at the increased level with respect to the current one, using the formatting convention.
-#define LOGGING_PRINTLN_VAR_AT(level,var) { if (!Logger::instance().is_muted_at(level)) { std::ostringstream logger_stream; logger_stream << std::boolalpha << #var << " = " << var; Logger::instance().println(level,logger_stream.str()); } }
+#define LOGGING_PRINTLN_VAR_AT(level, var)                           \
+    {                                                                \
+        if (!Logger::instance().is_muted_at(level)) {                \
+            std::ostringstream logger_stream;                        \
+            logger_stream << std::boolalpha << #var << " = " << var; \
+            Logger::instance().println(level, logger_stream.str());  \
+        }                                                            \
+    }
 // Print a text at the bottom line, holding it until the function scope ends; this requires creation of the scope.
 // Nested calls in separate functions append to the held line.
 // The text for obvious reasons shouldn't have newlines and carriage returns; for efficiency purposes this is not checked.
-#define LOGGING_SCOPE_PRINTHOLD(text) { if (!Logger::instance().is_muted_at(0)) { std::ostringstream logger_stream; logger_stream << std::boolalpha << text; Logger::instance().hold(LOGGING_PRETTY_FUNCTION,logger_stream.str()); } }
+#define LOGGING_SCOPE_PRINTHOLD(text)                                              \
+    {                                                                              \
+        if (!Logger::instance().is_muted_at(0)) {                                  \
+            std::ostringstream logger_stream;                                      \
+            logger_stream << std::boolalpha << text;                               \
+            Logger::instance().hold(LOGGING_PRETTY_FUNCTION, logger_stream.str()); \
+        }                                                                          \
+    }
 
 namespace Ariadne {
 
 using OutputStream = std::ostream;
-template<class T> using SharedPointer = std::shared_ptr<T>;
+template<class T>
+using SharedPointer = std::shared_ptr<T>;
 using SizeType = size_t;
 
 //! \brief Exception for trying to use threaded functionality with no attached thread registry
-class LoggerNoThreadRegistryException : public std::exception { };
+class LoggerNoThreadRegistryException : public std::exception {};
 //! \brief Exception for trying to modify the thread registry, which should be immutable as soon as attached
-class LoggerModifyThreadRegistryException : public std::exception { };
+class LoggerModifyThreadRegistryException : public std::exception {};
 //! \brief Exception for trying to change the scheduler while there are registered threads
-class LoggerSchedulerChangeWithRegisteredThreadsException : public std::exception { };
+class LoggerSchedulerChangeWithRegisteredThreadsException : public std::exception {};
 
 //! \brief A styling for a text character
 //! \details Refer to https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html#256-colors
@@ -95,22 +137,22 @@ struct TerminalTextStyle {
     bool is_styled() const;
 
     uint8_t fontcolor; // The color of the character
-    uint8_t bgcolor; // The color of the background of the character box
-    bool bold; // If the character must be highlighted in bold
-    bool underline; // If the character must be underlined
+    uint8_t bgcolor;   // The color of the background of the character box
+    bool bold;         // If the character must be highlighted in bold
+    bool underline;    // If the character must be underlined
 
     inline static std::string RESET = "\u001b[0m";
 };
 
-static TerminalTextStyle TT_STYLE_NONE(0,0,false,false);
-static TerminalTextStyle TT_STYLE_DARKBROWN(95,0,false,false);
-static TerminalTextStyle TT_STYLE_DARKORANGE(130,0,false,false);
-static TerminalTextStyle TT_STYLE_LIGHTBROWN(136,0,false,false);
-static TerminalTextStyle TT_STYLE_BRIGHTORANGE(208,0,false,false);
-static TerminalTextStyle TT_STYLE_CREAM(223,0,false,false);
-static TerminalTextStyle TT_STYLE_OBSIDIAN(237,0,false,false);
-static TerminalTextStyle TT_STYLE_DARKGREY(244,0,false,false);
-static TerminalTextStyle TT_STYLE_LIGHTGREY(251,0,false,false);
+static TerminalTextStyle TT_STYLE_NONE(0, 0, false, false);
+static TerminalTextStyle TT_STYLE_DARKBROWN(95, 0, false, false);
+static TerminalTextStyle TT_STYLE_DARKORANGE(130, 0, false, false);
+static TerminalTextStyle TT_STYLE_LIGHTBROWN(136, 0, false, false);
+static TerminalTextStyle TT_STYLE_BRIGHTORANGE(208, 0, false, false);
+static TerminalTextStyle TT_STYLE_CREAM(223, 0, false, false);
+static TerminalTextStyle TT_STYLE_OBSIDIAN(237, 0, false, false);
+static TerminalTextStyle TT_STYLE_DARKGREY(244, 0, false, false);
+static TerminalTextStyle TT_STYLE_LIGHTGREY(251, 0, false, false);
 
 //! \brief A set of text styles for different elements of the logging interface
 struct TerminalTextTheme {
@@ -120,44 +162,44 @@ struct TerminalTextTheme {
                       TerminalTextStyle round_parentheses, TerminalTextStyle square_parentheses, TerminalTextStyle curly_parentheses,
                       TerminalTextStyle colon, TerminalTextStyle comma, TerminalTextStyle number, TerminalTextStyle at, TerminalTextStyle keyword);
 
-    TerminalTextStyle level_number; // The number representing the log level
-    TerminalTextStyle level_shown_separator; // The separator when the level is shown
+    TerminalTextStyle level_number;           // The number representing the log level
+    TerminalTextStyle level_shown_separator;  // The separator when the level is shown
     TerminalTextStyle level_hidden_separator; // The separator when the level is hidden
 
-    TerminalTextStyle multiline_separator; // The separator for multiple lines output
-    TerminalTextStyle assignment_comparison; // Characters: =, >, <, !
+    TerminalTextStyle multiline_separator;    // The separator for multiple lines output
+    TerminalTextStyle assignment_comparison;  // Characters: =, >, <, !
     TerminalTextStyle miscellaneous_operator; // Characters: +, -, *, /, \, ^, |, &, %
 
-    TerminalTextStyle round_parentheses; // Characters: ( )
+    TerminalTextStyle round_parentheses;  // Characters: ( )
     TerminalTextStyle square_parentheses; // Characters: [ ]
-    TerminalTextStyle curly_parentheses; // Characters: { }
+    TerminalTextStyle curly_parentheses;  // Characters: { }
 
-    TerminalTextStyle colon; // Character: :
-    TerminalTextStyle comma; // Character: ,
+    TerminalTextStyle colon;  // Character: :
+    TerminalTextStyle comma;  // Character: ,
     TerminalTextStyle number; // A 0-9 digit, or a dot after a digit, but not if parsing a numbered_variable
 
-    TerminalTextStyle at; // Character: @
+    TerminalTextStyle at;      // Character: @
     TerminalTextStyle keyword; // Specific words, not pre/post-fixed by an alphanumeric character: virtual, const, true, false, inf
 
     bool has_style() const; // Whether at least one style is set
 
-    friend OutputStream& operator<<(OutputStream& os, TerminalTextTheme const& theme);
+    friend OutputStream& operator<<(OutputStream& os, const TerminalTextTheme& theme);
 };
 
 //! \brief Empty theme, for not forcing any theme
 static TerminalTextTheme TT_THEME_NONE = TerminalTextTheme();
 //! \brief Theme for black background
-static TerminalTextTheme TT_THEME_DARK = TerminalTextTheme(TT_STYLE_BRIGHTORANGE,TT_STYLE_BRIGHTORANGE,TT_STYLE_DARKGREY,
-                                                           TT_STYLE_DARKGREY,TT_STYLE_BRIGHTORANGE,TT_STYLE_LIGHTBROWN,
-                                                           TT_STYLE_DARKORANGE,TT_STYLE_DARKGREY,TT_STYLE_LIGHTBROWN,
-                                                           TT_STYLE_LIGHTBROWN,TT_STYLE_DARKGREY,TT_STYLE_CREAM,
-                                                           TT_STYLE_DARKGREY,TT_STYLE_DARKGREY);
+static TerminalTextTheme TT_THEME_DARK = TerminalTextTheme(TT_STYLE_BRIGHTORANGE, TT_STYLE_BRIGHTORANGE, TT_STYLE_DARKGREY,
+                                                           TT_STYLE_DARKGREY, TT_STYLE_BRIGHTORANGE, TT_STYLE_LIGHTBROWN,
+                                                           TT_STYLE_DARKORANGE, TT_STYLE_DARKGREY, TT_STYLE_LIGHTBROWN,
+                                                           TT_STYLE_LIGHTBROWN, TT_STYLE_DARKGREY, TT_STYLE_CREAM,
+                                                           TT_STYLE_DARKGREY, TT_STYLE_DARKGREY);
 //! \brief Theme for white background
-static TerminalTextTheme TT_THEME_LIGHT = TerminalTextTheme(TT_STYLE_BRIGHTORANGE,TT_STYLE_BRIGHTORANGE,TT_STYLE_DARKGREY,
-                                                            TT_STYLE_DARKGREY,TT_STYLE_DARKBROWN,TT_STYLE_DARKBROWN,
-                                                            TT_STYLE_DARKGREY,TT_STYLE_OBSIDIAN,TT_STYLE_LIGHTBROWN,
-                                                            TT_STYLE_LIGHTBROWN,TT_STYLE_OBSIDIAN,TT_STYLE_DARKORANGE,
-                                                            TT_STYLE_DARKGREY,TT_STYLE_DARKGREY);
+static TerminalTextTheme TT_THEME_LIGHT = TerminalTextTheme(TT_STYLE_BRIGHTORANGE, TT_STYLE_BRIGHTORANGE, TT_STYLE_DARKGREY,
+                                                            TT_STYLE_DARKGREY, TT_STYLE_DARKBROWN, TT_STYLE_DARKBROWN,
+                                                            TT_STYLE_DARKGREY, TT_STYLE_OBSIDIAN, TT_STYLE_LIGHTBROWN,
+                                                            TT_STYLE_LIGHTBROWN, TT_STYLE_OBSIDIAN, TT_STYLE_DARKORANGE,
+                                                            TT_STYLE_DARKGREY, TT_STYLE_DARKGREY);
 
 //! \brief Support class for managing log level increase/decrease in a scope
 //! \details Since it is possible to capture the scope string of a function only, nested scopes in a function have the same scope string
@@ -165,22 +207,25 @@ static TerminalTextTheme TT_THEME_LIGHT = TerminalTextTheme(TT_STYLE_BRIGHTORANG
 class LogScopeManager {
   public:
     //! \brief Construct with a given scope, and optionally choosing the amount of level increase
-    LogScopeManager(std::string scope, unsigned int level_increase=1);
+    LogScopeManager(std::string scope, unsigned int level_increase = 1);
     std::string scope() const;
+
   public:
     virtual ~LogScopeManager();
+
   private:
-    std::string const _scope;
-    unsigned int const _level_increase;
+    const std::string _scope;
+    const unsigned int _level_increase;
 };
 
 //! \brief Supported kinds of log messages
-enum RawMessageKind { PRINTLN, HOLD, RELEASE };
+enum RawMessageKind { PRINTLN,
+                      HOLD,
+                      RELEASE };
 
 //! \brief A log message in raw form, as submitted to a concurrent scheduler
 //! \details This does not hold any thread identifier information yet, for efficiency
 struct LogThinRawMessage {
-
     LogThinRawMessage(std::string scope, unsigned int level, std::string text);
 
     std::string scope;
@@ -192,27 +237,28 @@ struct LogThinRawMessage {
 
 //! \brief Full log message information in raw form, before formatting for actual output
 struct LogRawMessage : public LogThinRawMessage {
-    LogRawMessage(std::string id, LogThinRawMessage msg) : LogThinRawMessage(msg), identifier(id) { }
-    LogRawMessage(std::string id, std::string scp, unsigned int lvl, std::string txt) : LogRawMessage(id,LogThinRawMessage(scp,lvl,txt)) { }
-    LogRawMessage(std::string scp, unsigned int lvl, std::string txt) : LogThinRawMessage(scp,lvl,txt), identifier("") { }
+    LogRawMessage(std::string id, LogThinRawMessage msg) : LogThinRawMessage(msg), identifier(id) {}
+    LogRawMessage(std::string id, std::string scp, unsigned int lvl, std::string txt) : LogRawMessage(id, LogThinRawMessage(scp, lvl, txt)) {}
+    LogRawMessage(std::string scp, unsigned int lvl, std::string txt) : LogThinRawMessage(scp, lvl, txt), identifier("") {}
     std::string identifier;
 };
 
 class LoggerData;
 
 //! \brief The policy for printing the thread id with respect to the log level: NEVER, BEFORE or AFTER
-enum class ThreadNamePrintingPolicy { NEVER, BEFORE, AFTER };
+enum class ThreadNamePrintingPolicy { NEVER,
+                                      BEFORE,
+                                      AFTER };
 
 OutputStream& operator<<(OutputStream& os, const ThreadNamePrintingPolicy& p);
 
 //! \brief Return whether the character immediately preceding a pos is alphanumeric,
 //! accounting for an ANSI reset sequence ending at a pos.
-bool isalphanumeric_withstylecodes(std::string const& text, size_t pos);
+bool isalphanumeric_withstylecodes(const std::string& text, size_t pos);
 
 //! \brief Configuration of visualisation settings for a Logger
 class LoggerConfiguration {
   public:
-
     LoggerConfiguration();
 
     //! \brief Configuration setters
@@ -247,19 +293,19 @@ class LoggerConfiguration {
     ThreadNamePrintingPolicy thread_name_printing_policy() const;
 
     //! \brief Style theme for terminal output
-    void set_theme(TerminalTextTheme const& theme);
+    void set_theme(const TerminalTextTheme& theme);
     //! \brief Get the current theme used
     TerminalTextTheme theme() const;
     //! \brief Add a keyword to the default ones offered, forcing a given style
     //! \details Adding an existing keyword has no effect
-    void add_custom_keyword(std::string const& text, TerminalTextStyle const& style);
+    void add_custom_keyword(const std::string& text, const TerminalTextStyle& style);
     //! \brief Add a keyword to the default ones offered, using the keyword style for the current theme
     //! \details Adding an existing keyword has no effect. Changing the theme will not apply to this custom keyword.
-    void add_custom_keyword(std::string const& text);
+    void add_custom_keyword(const std::string& text);
     //! \brief Get the map of keywords (a TerminalTextStyle equal to TT_STYLE_NONE implies no custom style forced)
-    std::map<std::string,TerminalTextStyle> custom_keywords() const;
+    std::map<std::string, TerminalTextStyle> custom_keywords() const;
 
-    friend OutputStream& operator<<(OutputStream& os, LoggerConfiguration const& configuration);
+    friend OutputStream& operator<<(OutputStream& os, const LoggerConfiguration& configuration);
 
   private:
     mutable std::mutex _mutex;
@@ -273,7 +319,7 @@ class LoggerConfiguration {
     ThreadNamePrintingPolicy _thread_name_printing_policy;
 
     TerminalTextTheme _theme;
-    std::map<std::string,TerminalTextStyle> _custom_keywords;
+    std::map<std::string, TerminalTextStyle> _custom_keywords;
 };
 
 class LoggerSchedulerInterface;
@@ -288,10 +334,11 @@ class Logger {
     friend class NonblockingLoggerScheduler;
 
     Logger();
+
   public:
     ~Logger();
-    Logger(Logger const&) = delete;
-    void operator=(Logger const&) = delete;
+    Logger(const Logger&) = delete;
+    void operator=(const Logger&) = delete;
 
     static Logger& instance();
 
@@ -334,18 +381,19 @@ class Logger {
     LoggerConfiguration& configuration();
 
   private:
-    std::string _apply_theme(std::string const& text) const;
-    std::string _apply_theme_for_keywords(std::string const& text) const;
+    std::string _apply_theme(const std::string& text) const;
+    std::string _apply_theme_for_keywords(const std::string& text) const;
     void _print_preamble_for_firstline(unsigned int level, std::string thread_name);
     void _print_preamble_for_extralines(unsigned int level, SizeType thread_name_size);
-    std::string _discard_newlines_and_indentation(std::string const& text);
+    std::string _discard_newlines_and_indentation(const std::string& text);
     void _cover_held_columns_with_whitespaces(unsigned int printed_columns);
     void _print_held_line();
-    void _println(LogRawMessage const& msg);
-    void _hold(LogRawMessage const& msg);
-    void _release(LogRawMessage const& msg);
+    void _println(const LogRawMessage& msg);
+    void _hold(const LogRawMessage& msg);
+    void _release(const LogRawMessage& msg);
     bool _is_holding() const;
     bool _can_print_thread_name() const;
+
   private:
     static const unsigned int _MUTE_LEVEL_OFFSET;
     static const std::string _MAIN_THREAD_NAME;

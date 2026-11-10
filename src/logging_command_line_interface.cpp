@@ -23,6 +23,7 @@
  */
 
 #include "logging/logging_command_line_interface.hpp"
+
 #include "logging/logging.hpp"
 
 namespace Ariadne {
@@ -36,7 +37,7 @@ ArgumentParser make_scheduler_argument_parser() {
         "s",
         "scheduler",
         "Choose the logging scheduler as a <value> in [ immediate | blocking | nonblocking ] (default: nonblocking)",
-        [](String const& value) -> VoidFunction {
+        [](const String& value) -> VoidFunction {
             if (value == "immediate") {
                 return [] { Logger::instance().use_immediate_scheduler(); };
             }
@@ -56,13 +57,13 @@ ArgumentParser make_theme_argument_parser() {
         "t",
         "theme",
         "Choose the logging theme as a <value> in [ none | light | dark ] (default: none)",
-        [](String const& value) -> VoidFunction {
-            TerminalTextTheme theme=TT_THEME_NONE;
+        [](const String& value) -> VoidFunction {
+            TerminalTextTheme theme = TT_THEME_NONE;
             if (value != "none") {
                 if (value == "light") {
-                    theme=TT_THEME_LIGHT;
+                    theme = TT_THEME_LIGHT;
                 } else if (value == "dark") {
-                    theme=TT_THEME_DARK;
+                    theme = TT_THEME_DARK;
                 } else {
                     throw std::runtime_error("invalid logging theme");
                 }
@@ -78,8 +79,8 @@ ArgumentParser make_verbosity_argument_parser() {
         "v",
         "verbosity",
         "Choose the logging verbosity as a non-negative integer <value> (default: 0)",
-        [](String const& value) -> VoidFunction {
-            Int const verbosity=std::stoi(value);
+        [](const String& value) -> VoidFunction {
+            const Int verbosity = std::stoi(value);
             if (verbosity < 0) {
                 throw std::runtime_error("negative logging verbosity");
             }
@@ -95,11 +96,9 @@ ArgumentParser make_verbosity_argument_parser() {
 LoggingCommandLineInterface::LoggingCommandLineInterface() {
     add(CommandLineContribution(
         "logging",
-        {
-            make_scheduler_argument_parser(),
-            make_theme_argument_parser(),
-            make_verbosity_argument_parser()
-        }));
+        {make_scheduler_argument_parser(),
+         make_theme_argument_parser(),
+         make_verbosity_argument_parser()}));
 }
 
 } // namespace Ariadne
