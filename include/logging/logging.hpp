@@ -1,5 +1,5 @@
 /***************************************************************************
- *            logging.hpp
+ *            logging/logging.hpp
  *
  *  Copyright  2021  Luca Geretti
  *

@@ -26,6 +26,15 @@ It features the following:
 extends Utility's `CommandLineInterface` with logging scheduler, theme and
 verbosity options. Derived classes may add contributions through `add()`.
 
+## Shared CMake configuration
+
+The root project uses `ariadne_setup_module(logging)` from the pinned Build
+submodule. The helper derives the functional dependency on Utility from the
+declared submodules; the platform dependency `Threads::Threads` remains
+explicit. Testing is selected only by the compilation root and never linked
+to production Logging. Commit consistency checks are skipped in nested
+projects because the parent selects the pinned Logging commit.
+
 ## Build
 
 Clone the repository together with its Git submodules:

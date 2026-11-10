@@ -1,5 +1,5 @@
 /***************************************************************************
- *            progress_indicator.hpp
+ *            logging/progress_indicator.hpp
  *
  *  Copyright  2021  Luca Geretti
  *

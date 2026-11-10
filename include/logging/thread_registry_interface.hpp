@@ -1,5 +1,5 @@
 /***************************************************************************
- *            thread_registry_interface.hpp
+ *            logging/thread_registry_interface.hpp
  *
  *  Copyright  2022  Luca Geretti
  *
