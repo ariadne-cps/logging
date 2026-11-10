@@ -38,7 +38,17 @@ class ProgressIndicator {
     void update_current(double new_value) { if (_current_value != new_value) { _current_value = new_value; ++_step; } }
     void update_final(double new_final) { _final_value = new_final; }
     char symbol() const { switch (_step % 4) { case 0: return '\\'; case 1: return '|'; case 2: return '/'; default: return '-'; }}
-    unsigned int percentage() const { return static_cast<unsigned int>(std::round(_current_value/_final_value*100u)); }
+    unsigned int percentage() const {
+        // An unset or zero-length interval has no measurable progress.
+        // Never convert NaN, infinity, or an out-of-range value to unsigned.
+        if (!std::isfinite(_final_value) || !std::isfinite(_current_value) || _final_value <= 0.0) {
+            return 0u;
+        }
+        double const fraction = _current_value / _final_value;
+        if (fraction <= 0.0) return 0u;
+        if (fraction >= 1.0) return 100u;
+        return static_cast<unsigned int>(std::round(fraction * 100.0));
+    }
   private:
     double _final_value;
     double _current_value;

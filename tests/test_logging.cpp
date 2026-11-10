@@ -316,6 +316,18 @@ static void print_something2() {
         indicator.update_final(8.0);
         ARIADNE_TESTING_EXPECT_EQUAL( indicator.final_value(), 8.0);
         ARIADNE_TESTING_EXPECT_EQUAL( indicator.percentage(), 50u);
+
+        // A workload with a zero-time horizon must not evaluate 0/0.
+        ProgressIndicator zero_horizon;
+        ARIADNE_TESTING_EXPECT_EQUAL(zero_horizon.percentage(), 0u);
+        zero_horizon.update_current(1.0);
+        ARIADNE_TESTING_EXPECT_EQUAL(zero_horizon.percentage(), 0u);
+        zero_horizon.update_final(2.0);
+        ARIADNE_TESTING_EXPECT_EQUAL(zero_horizon.percentage(), 50u);
+        zero_horizon.update_current(3.0);
+        ARIADNE_TESTING_EXPECT_EQUAL(zero_horizon.percentage(), 100u);
+        zero_horizon.update_current(-1.0);
+        ARIADNE_TESTING_EXPECT_EQUAL(zero_horizon.percentage(), 0u);
     }
 
     void test_window_columns() {
