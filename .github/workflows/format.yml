@@ -1,0 +1,33 @@
+name: Format
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check-format:
+    name: Check C++ formatting
+    runs-on: macos-26
+    permissions:
+      contents: read
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v7
+
+      - name: Install formatting tools
+        run: brew install ninja pkg-config clang-format
+
+      - name: Initialize Build submodule
+        run: git submodule update --init -- ss/bui
+
+      - name: Configure CMake
+        run: |
+          cmake -S . -B "${{ runner.temp }}/format-build" -G Ninja \
+            -DBUILD_PYTHON_BINDINGS=OFF \
+            -DARIADNE_CLANG_FORMAT_EXECUTABLE="$(brew --prefix clang-format)/bin/clang-format"
+
+      - name: Check formatting
+        run: cmake --build "${{ runner.temp }}/format-build" --target check-format
