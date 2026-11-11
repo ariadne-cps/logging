@@ -38,6 +38,7 @@ namespace Ariadne {
 //! interfaces to extend the profile using add().
 class LoggingCommandLineInterface : public CommandLineInterface {
   public:
+    /** @brief Construct a \c LoggingCommandLineInterface with the specified characteristics. */
     LoggingCommandLineInterface();
 };
 

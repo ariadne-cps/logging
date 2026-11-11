@@ -36,16 +36,22 @@ namespace Ariadne {
 //! \brief Helper class to display progress percentage when holding text in Logger
 class ProgressIndicator {
   public:
+    /** @brief Construct a \c ProgressIndicator from final_value. */
     ProgressIndicator(double final_value = 0.0) : _final_value(final_value), _current_value(0u), _step(0u) {}
+    /** @brief Return the target progress value. */
     double final_value() const { return _final_value; }
+    /** @brief Return the current progress value. */
     double current_value() const { return _current_value; }
+    /** @brief Set the current progress value and advance the spinner when it changes. */
     void update_current(double new_value) {
         if (_current_value != new_value) {
             _current_value = new_value;
             ++_step;
         }
     }
+    /** @brief Set the target progress value. */
     void update_final(double new_final) { _final_value = new_final; }
+    /** @brief Return the spinner character corresponding to the current progress step. */
     char symbol() const {
         switch (_step % 4) {
             case 0:
@@ -58,6 +64,7 @@ class ProgressIndicator {
                 return '-';
         }
     }
+    /** @brief Return progress rounded and clamped to 0–100; return zero for invalid or nonpositive targets. */
     unsigned int percentage() const {
         // An unset or zero-length interval has no measurable progress.
         // Never convert NaN, infinity, or an out-of-range value to unsigned.
