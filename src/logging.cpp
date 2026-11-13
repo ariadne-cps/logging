@@ -235,6 +235,7 @@ class LoggerSchedulerInterface {
     virtual void hold(std::string scope, std::string text) = 0;
     virtual void release(std::string scope) = 0;
     virtual unsigned int current_level() const = 0;
+    virtual std::optional<unsigned int> try_current_level() const = 0;
     virtual std::string current_thread_name() const = 0;
     virtual SizeType largest_thread_name_size() const = 0;
     virtual void increase_level(unsigned int i) = 0;
@@ -252,6 +253,7 @@ class ImmediateLoggerScheduler : public LoggerSchedulerInterface {
     void hold(std::string scope, std::string text) override;
     void release(std::string scope) override;
     unsigned int current_level() const override;
+    std::optional<unsigned int> try_current_level() const override;
     std::string current_thread_name() const override;
     SizeType largest_thread_name_size() const override;
     void increase_level(unsigned int i) override;
@@ -274,6 +276,7 @@ class BlockingLoggerScheduler : public LoggerSchedulerInterface {
     void hold(std::string scope, std::string text) override;
     void release(std::string scope) override;
     unsigned int current_level() const override;
+    std::optional<unsigned int> try_current_level() const override;
     std::string current_thread_name() const override;
     SizeType largest_thread_name_size() const override;
     void increase_level(unsigned int i) override;
@@ -297,6 +300,7 @@ class NonblockingLoggerScheduler : public LoggerSchedulerInterface {
     void hold(std::string scope, std::string text) override;
     void release(std::string scope) override;
     unsigned int current_level() const override;
+    std::optional<unsigned int> try_current_level() const override;
     std::string current_thread_name() const override;
     SizeType largest_thread_name_size() const override;
     void increase_level(unsigned int i) override;
@@ -329,6 +333,10 @@ class NonblockingLoggerScheduler : public LoggerSchedulerInterface {
 ImmediateLoggerScheduler::ImmediateLoggerScheduler() : _current_level(1) {}
 
 unsigned int ImmediateLoggerScheduler::current_level() const {
+    return _current_level;
+}
+
+std::optional<unsigned int> ImmediateLoggerScheduler::try_current_level() const {
     return _current_level;
 }
 
@@ -388,6 +396,14 @@ void BlockingLoggerScheduler::kill_data_instance(std::thread::id id) {
 unsigned int BlockingLoggerScheduler::current_level() const {
     std::lock_guard<std::mutex> lock(_data_mutex);
     return _data.find(std::this_thread::get_id())->second.first;
+}
+
+std::optional<unsigned int> BlockingLoggerScheduler::try_current_level() const {
+    std::lock_guard<std::mutex> lock(_data_mutex);
+    const auto it = _data.find(std::this_thread::get_id());
+    if (it == _data.end())
+        return std::nullopt;
+    return it->second.first;
 }
 
 std::string BlockingLoggerScheduler::current_thread_name() const {
@@ -508,6 +524,14 @@ bool NonblockingLoggerScheduler::_are_alive_threads_registered_unlocked() const 
 unsigned int NonblockingLoggerScheduler::current_level() const {
     std::lock_guard<std::mutex> lock(_data_mutex);
     return _data.find(std::this_thread::get_id())->second->current_level();
+}
+
+std::optional<unsigned int> NonblockingLoggerScheduler::try_current_level() const {
+    std::lock_guard<std::mutex> lock(_data_mutex);
+    const auto it = _data.find(std::this_thread::get_id());
+    if (it == _data.end())
+        return std::nullopt;
+    return it->second->current_level();
 }
 
 std::string NonblockingLoggerScheduler::current_thread_name() const {
@@ -894,6 +918,11 @@ bool Logger::is_muted_at(unsigned int i) const {
 unsigned int Logger::current_level() const {
     std::shared_lock<std::shared_mutex> lock(_scheduler_mutex);
     return _scheduler->current_level();
+}
+
+std::optional<unsigned int> Logger::try_current_level() const {
+    std::shared_lock<std::shared_mutex> lock(_scheduler_mutex);
+    return _scheduler->try_current_level();
 }
 
 std::string Logger::current_thread_name() const {

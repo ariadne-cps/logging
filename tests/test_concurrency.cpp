@@ -96,6 +96,20 @@ class TestConcurrency : public Ariadne::Testing::ContextFixture {
         Logger::instance().use_nonblocking_scheduler();
         Logger::instance().redirect_to_file(concurrent_filename.c_str());
 
+        // The main thread has a logging context, but an arbitrary
+        // external thread is not registered with the scheduler.
+        const auto registered_level = Logger::instance().try_current_level();
+        if (!registered_level || *registered_level != Logger::instance().current_level())
+            return 6;
+        std::promise<std::optional<unsigned int>> unregistered_promise;
+        auto unregistered_future = unregistered_promise.get_future();
+        std::thread unregistered([&unregistered_promise] {
+            unregistered_promise.set_value(Logger::instance().try_current_level());
+        });
+        unregistered.join();
+        if (unregistered_future.get().has_value())
+            return 7;
+
         std::promise<void> start_promise;
         std::shared_future<void> start_future(start_promise.get_future());
         std::vector<std::thread> threads;

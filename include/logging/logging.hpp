@@ -35,6 +35,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <queue>
 #include <shared_mutex>
 #include <sstream>
@@ -420,6 +421,10 @@ class Logger {
 
     /** @brief Return the current thread log level. */
     unsigned int current_level() const;
+    /** @brief Return the current thread level if registered with the active scheduler.
+     *  Unregistered callers return std::nullopt instead of accessing missing thread data.
+     */
+    std::optional<unsigned int> try_current_level() const;
     /** @brief Return the current thread display name. */
     std::string current_thread_name() const;
     /** @brief Return the thread name used by the last printed line. */
