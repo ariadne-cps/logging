@@ -170,6 +170,10 @@ class TestLogging : public Ariadne::Testing::ContextFixture {
             ARIADNE_TESTING_EXPECT_NO_THROW(test_high_level_hidden_level_and_hold_reprint());
         } while (false);
         do {
+            auto phase_scope = this->ctx().scope("phase", "test_prefix_wider_than_terminal_and_bounded_hold_delay()");
+            ARIADNE_TESTING_EXPECT_NO_THROW(test_prefix_wider_than_terminal_and_bounded_hold_delay());
+        } while (false);
+        do {
             auto phase_scope = this->ctx().scope("phase", "test_hold_line()");
             ARIADNE_TESTING_EXPECT_NO_THROW(test_hold_line());
         } while (false);
@@ -612,6 +616,28 @@ class TestLogging : public Ariadne::Testing::ContextFixture {
         LOGGING_PRINTLN("single-line while held")
         Logger::instance().release("coverage-final-reprint");
         Logger::instance().configuration().set_handles_multiline_output(true);
+    }
+
+    void test_prefix_wider_than_terminal_and_bounded_hold_delay() {
+        Logger& logger = Logger::instance();
+        logger.use_immediate_scheduler();
+        auto& configuration = logger.configuration();
+        const auto previous_verbosity = configuration.verbosity();
+        const bool previous_multiline = configuration.handles_multiline_output();
+        configuration.set_verbosity(200u);
+        configuration.set_handles_multiline_output(true);
+
+        std::ostringstream captured;
+        auto* previous_buffer = std::clog.rdbuf(captured.rdbuf());
+        logger.hold("coverage-wide-prefix", "held");
+        logger.println(100u, "high-level-output-with-wide-prefix");
+        logger.release("coverage-wide-prefix");
+        std::clog.rdbuf(previous_buffer);
+        configuration.set_verbosity(previous_verbosity);
+        configuration.set_handles_multiline_output(previous_multiline);
+
+        ARIADNE_TESTING_PROVE(captured.str().find("high-level-output-with-wide-prefix")
+                              != std::string::npos);
     }
 
     void test_handles_multiline_output() {

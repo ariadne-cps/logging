@@ -1227,7 +1227,11 @@ void Logger::_print_held_line() {
     _cached_num_held_columns = held_columns;
     // Sleep for a time exponential in the last printed level (used as an average of the levels printed)
     // In this way, holding is printed more cleanly against the OS buffering, which overrules flushing
-    std::this_thread::sleep_for(std::chrono::microseconds(10 << _cached_last_printed_level));
+    // Keep the refresh delay bounded even for diagnostic levels >= 100.
+    // An unrestricted left shift is undefined at large levels and can
+    // stall the nonblocking consumer during Logger::terminate().
+    const unsigned int delay_shift = std::min(_cached_last_printed_level, 10u);
+    std::this_thread::sleep_for(std::chrono::microseconds(10u << delay_shift));
 }
 
 void Logger::_cover_held_columns_with_whitespaces(unsigned int printed_columns) {
@@ -1249,8 +1253,13 @@ void Logger::_println(const LogRawMessage& msg) {
     std::string text = msg.text;
     if (configuration().discards_newlines_and_indentation())
         text = _discard_newlines_and_indentation(text);
-    if (configuration().handles_multiline_output() and msg.text.size() > 0) {
-        const unsigned int max_columns = get_window_columns();
+    const unsigned int max_columns = get_window_columns();
+    // The prefix can occupy the entire terminal width at high log levels.
+    // Wrapping with zero remaining columns never advances text_ptr; with a
+    // wider prefix the unsigned subtraction below would wrap around.
+    // In that case print the text without additional wrapping.
+    if (configuration().handles_multiline_output() and msg.text.size() > 0 and
+        preamble_columns < max_columns) {
         size_t text_ptr = 0;
         const size_t text_size = text.size();
         while (true) {
