@@ -85,21 +85,34 @@ If you would like to contribute to Logging, please contact the developer:
 
 * Luca Geretti <luca.geretti@univr.it>
 
-## Silent CTest logging for consumers
+## Test runner for clients of Logging
 
-Tests in repositories consuming Logging can use the CMake function
-`ariadne_add_silent_test(NAME ... COMMAND ... --concise)` instead of
-`add_test`. It registers the same test command but appends
-`ARIADNE_TEST_LOG_NULL=1` to its environment without overwriting existing
-test settings, including Windows PATH. No changes to test `main()` functions
-are required.
+The opt-in test-only header `logging/test_runner.hpp` defines
+`Ariadne::Testing::run_logging_suite(suite, argc, argv)`. It accepts
+`--logtonull` in addition to the existing `--concise` and `--full`
+arguments supported by Ariadne Testing. For example:
 
-When this environment variable is `1`, Logger redirects to `/dev/null`
-(or `NUL` on Windows), uses a synchronous scheduler, and avoids
-terminal-only line wrapping and redraw delays. Enabled logging expressions
-still execute with unchanged verbosity. Direct execution without the
-environment variable retains normal logging; `--concise` controls the
-separate Ariadne Testing reporter and is passed only by CTest.
+```cpp
+#include "logging/test_runner.hpp"
 
-Logging's own test suite intentionally uses plain `add_test` so the logger's
-actual output can be inspected.
+// In a test executable's main(), after registering the suite:
+return Ariadne::Testing::run_logging_suite(suite, argc, argv);
+```
+
+A CTest registration in a consuming project can invoke the executable
+with `--concise --logtonull`. Direct execution without flags uses the
+complete reporter and normal visible logging. `--concise` affects only
+the reporter; `--logtonull` affects only Logger output.
+
+With `--logtonull`, the runner selects synchronous message processing,
+redirects `std::clog` to `/dev/null` (or `NUL` on Windows), and avoids
+terminal-only multiline layout. It restores the prior layout configuration
+and stream buffer at the end of the suite. **It does not lower verbosity
+or mute logging expressions**, preserving test coverage. The logger also
+skips its artificial held-line redraw delay when output is redirected.
+
+This header is not included by the production umbrella header, and
+Logging's own test suite continues using Ariadne Testing's ordinary runner
+so that Logging output remains observable. No environment variable is
+needed or interpreted by Logger. Consumer migration and dependency gitlink
+propagation are separate work and are not part of this change.

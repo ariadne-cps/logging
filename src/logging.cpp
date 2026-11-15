@@ -24,8 +24,6 @@
 
 #include <atomic>
 #include <cassert>
-#include <cstdlib>
-#include <cstring>
 #include <functional>
 #include <future>
 #include <iostream>
@@ -783,22 +781,7 @@ OutputStream& operator<<(OutputStream& os, const LoggerConfiguration& c) {
 
 Logger::Logger() : _default_streambuf(std::clog.rdbuf()),
                    _cached_num_held_columns(0), _cached_last_printed_level(0), _cached_last_printed_thread_name(std::string()),
-                   _scheduler(std::make_shared<NonblockingLoggerScheduler>()), _thread_registry(nullptr) {
-    // CTest sets this environment only for consumer tests, never Logging's
-    // own tests. It is independent of the Testing reporter's --concise flag.
-    const char* discard = std::getenv("ARIADNE_TEST_LOG_NULL");
-    if (discard != nullptr and std::strcmp(discard, "1") == 0) {
-        // Process enabled diagnostic expressions without a queued teardown
-        // backlog. Do not change Logger verbosity or mute level.
-        use_blocking_scheduler();
-#ifdef _WIN32
-        redirect_to_file("NUL");
-#else
-        redirect_to_file("/dev/null");
-#endif
-        _configuration.set_handles_multiline_output(false);
-    }
-}
+                   _scheduler(std::make_shared<NonblockingLoggerScheduler>()), _thread_registry(nullptr) {}
 
 Logger& Logger::instance() {
 #ifdef _WIN32

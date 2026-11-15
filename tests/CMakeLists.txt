@@ -3,6 +3,7 @@ include(CTest)
 set(UNIT_TESTS
     test_command_line
     test_logging
+    test_logging_runner
     test_concurrency
     test_unattached_scheduler
 )
