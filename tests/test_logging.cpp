@@ -23,6 +23,7 @@
  */
 
 #include <array>
+#include <chrono>
 #include <list>
 #ifndef _WIN32
 #include <fcntl.h>
@@ -172,6 +173,10 @@ class TestLogging : public Ariadne::Testing::ContextFixture {
         do {
             auto phase_scope = this->ctx().scope("phase", "test_prefix_wider_than_terminal_and_bounded_hold_delay()");
             ARIADNE_TESTING_EXPECT_NO_THROW(test_prefix_wider_than_terminal_and_bounded_hold_delay());
+        } while (false);
+        do {
+            auto phase_scope = this->ctx().scope("phase", "test_no_delay_when_redirected()");
+            ARIADNE_TESTING_EXPECT_NO_THROW(test_no_delay_when_redirected());
         } while (false);
         do {
             auto phase_scope = this->ctx().scope("phase", "test_hold_line()");
@@ -638,6 +643,31 @@ class TestLogging : public Ariadne::Testing::ContextFixture {
 
         ARIADNE_TESTING_PROVE(captured.str().find("high-level-output-with-wide-prefix")
                               != std::string::npos);
+    }
+
+    void test_no_delay_when_redirected() {
+        Logger& logger = Logger::instance();
+        logger.use_immediate_scheduler();
+        auto& config = logger.configuration();
+        const auto old_verbosity = config.verbosity();
+        config.set_verbosity(200u);
+#ifdef _WIN32
+        logger.redirect_to_file("NUL");
+#else
+        logger.redirect_to_file("/dev/null");
+#endif
+        // Previously, 128 hold/release pairs caused >= 2.6 seconds of
+        // artificial sleep even with output discarded.
+        logger.println(100u, "establish high printed log level");
+        const auto start = std::chrono::steady_clock::now();
+        for (unsigned i = 0u; i != 128u; ++i) {
+            logger.hold("redirection-delay-regression", "test");
+            logger.release("redirection-delay-regression");
+        }
+        const auto elapsed = std::chrono::steady_clock::now() - start;
+        logger.redirect_to_console();
+        config.set_verbosity(old_verbosity);
+        ARIADNE_TESTING_PROVE(elapsed < std::chrono::seconds(2));
     }
 
     void test_handles_multiline_output() {

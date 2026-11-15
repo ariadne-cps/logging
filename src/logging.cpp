@@ -1230,8 +1230,13 @@ void Logger::_print_held_line() {
     // Keep the refresh delay bounded even for diagnostic levels >= 100.
     // An unrestricted left shift is undefined at large levels and can
     // stall the nonblocking consumer during Logger::terminate().
-    const unsigned int delay_shift = std::min(_cached_last_printed_level, 10u);
-    std::this_thread::sleep_for(std::chrono::microseconds(10u << delay_shift));
+    // The delay only helps terminal redraws. Log-file sinks (notably NUL
+    // and /dev/null in tests) must not sleep on each held-line update.
+    // All formatting and logging branches continue to execute.
+    if (not _redirect_file.is_open()) {
+        const unsigned int delay_shift = std::min(_cached_last_printed_level, 10u);
+        std::this_thread::sleep_for(std::chrono::microseconds(10u << delay_shift));
+    }
 }
 
 void Logger::_cover_held_columns_with_whitespaces(unsigned int printed_columns) {
