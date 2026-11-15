@@ -641,8 +641,7 @@ class TestLogging : public Ariadne::Testing::ContextFixture {
         configuration.set_verbosity(previous_verbosity);
         configuration.set_handles_multiline_output(previous_multiline);
 
-        ARIADNE_TESTING_PROVE(captured.str().find("high-level-output-with-wide-prefix")
-                              != std::string::npos);
+        ARIADNE_TESTING_PROVE(captured.str().find("high-level-output-with-wide-prefix") != std::string::npos);
     }
 
     void test_no_delay_when_redirected() {

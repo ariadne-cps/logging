@@ -33,8 +33,9 @@
 #include <string_view>
 #include <vector>
 
-#include "ariadne-testing.hpp"
 #include "logging/logging.hpp"
+
+#include "ariadne-testing.hpp"
 
 namespace Ariadne::Testing {
 

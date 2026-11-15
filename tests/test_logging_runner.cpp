@@ -30,8 +30,9 @@
 #include <string>
 #include <vector>
 
-#include "ariadne-testing.hpp"
 #include "logging/test_runner.hpp"
+
+#include "ariadne-testing.hpp"
 
 using namespace Ariadne;
 
