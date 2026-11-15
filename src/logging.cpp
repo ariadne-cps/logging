@@ -24,6 +24,8 @@
 
 #include <atomic>
 #include <cassert>
+#include <cstdlib>
+#include <cstring>
 #include <functional>
 #include <future>
 #include <iostream>
@@ -781,7 +783,22 @@ OutputStream& operator<<(OutputStream& os, const LoggerConfiguration& c) {
 
 Logger::Logger() : _default_streambuf(std::clog.rdbuf()),
                    _cached_num_held_columns(0), _cached_last_printed_level(0), _cached_last_printed_thread_name(std::string()),
-                   _scheduler(std::make_shared<NonblockingLoggerScheduler>()), _thread_registry(nullptr) {}
+                   _scheduler(std::make_shared<NonblockingLoggerScheduler>()), _thread_registry(nullptr) {
+    // CTest sets this environment only for consumer tests, never Logging's
+    // own tests. It is independent of the Testing reporter's --concise flag.
+    const char* discard = std::getenv("ARIADNE_TEST_LOG_NULL");
+    if (discard != nullptr and std::strcmp(discard, "1") == 0) {
+        // Process enabled diagnostic expressions without a queued teardown
+        // backlog. Do not change Logger verbosity or mute level.
+        use_blocking_scheduler();
+#ifdef _WIN32
+        redirect_to_file("NUL");
+#else
+        redirect_to_file("/dev/null");
+#endif
+        _configuration.set_handles_multiline_output(false);
+    }
+}
 
 Logger& Logger::instance() {
 #ifdef _WIN32
@@ -800,8 +817,14 @@ const std::string Logger::_MAIN_THREAD_NAME = "main";
 const unsigned int Logger::_MUTE_LEVEL_OFFSET = 1024;
 
 Logger::~Logger() {
-    std::unique_lock<std::shared_mutex> lock(_scheduler_mutex);
-    _scheduler->terminate();
+    {
+        std::unique_lock<std::shared_mutex> lock(_scheduler_mutex);
+        _scheduler->terminate();
+    }
+    // std::clog must stop referencing the redirected streambuf before
+    // the owned std::ofstream is destroyed.
+    if (_redirect_file.is_open())
+        redirect_to_console();
 }
 
 void Logger::attach_thread_registry(ThreadRegistryInterface* registry) {
@@ -842,15 +865,17 @@ void Logger::use_nonblocking_scheduler() {
 }
 
 void Logger::redirect_to_console() {
+    std::clog.rdbuf(_default_streambuf);
     if (_redirect_file.is_open())
         _redirect_file.close();
-    std::clog.rdbuf(_default_streambuf);
 }
 
 void Logger::redirect_to_file(const char* filename) {
     if (_redirect_file.is_open())
-        _redirect_file.close();
+        redirect_to_console();
     _redirect_file.open(filename);
+    if (!_redirect_file.is_open())
+        throw std::runtime_error("Logger: cannot open output file");
     _default_streambuf = std::clog.rdbuf();
     std::clog.rdbuf(_redirect_file.rdbuf());
 }

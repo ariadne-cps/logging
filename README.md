@@ -84,3 +84,22 @@ On Ubuntu coverage is generated with GCC/lcov. On macOS it is generated with App
 If you would like to contribute to Logging, please contact the developer: 
 
 * Luca Geretti <luca.geretti@univr.it>
+
+## Silent CTest logging for consumers
+
+Tests in repositories consuming Logging can use the CMake function
+`ariadne_add_silent_test(NAME ... COMMAND ... --concise)` instead of
+`add_test`. It registers the same test command but appends
+`ARIADNE_TEST_LOG_NULL=1` to its environment without overwriting existing
+test settings, including Windows PATH. No changes to test `main()` functions
+are required.
+
+When this environment variable is `1`, Logger redirects to `/dev/null`
+(or `NUL` on Windows), uses a synchronous scheduler, and avoids
+terminal-only line wrapping and redraw delays. Enabled logging expressions
+still execute with unchanged verbosity. Direct execution without the
+environment variable retains normal logging; `--concise` controls the
+separate Ariadne Testing reporter and is passed only by CTest.
+
+Logging's own test suite intentionally uses plain `add_test` so the logger's
+actual output can be inspected.

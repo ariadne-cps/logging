@@ -28,3 +28,16 @@ ariadne_setup_module(logging)
 
 # Additional system dependency, not a Git submodule. This remains explicit.
 target_link_libraries(logging INTERFACE Threads::Threads)
+
+# Shared CTest registration policy for every module consuming Logging.
+# The caller owns its --concise arguments and other test properties.
+# Logging's own test suite uses plain add_test, so its output remains visible.
+function(ariadne_add_silent_test)
+    cmake_parse_arguments(SILENT_TEST "" "NAME" "" ${ARGN})
+    if(NOT SILENT_TEST_NAME)
+        message(FATAL_ERROR "ariadne_add_silent_test requires NAME")
+    endif()
+    add_test(${ARGN})
+    set_property(TEST ${SILENT_TEST_NAME} APPEND PROPERTY ENVIRONMENT
+                 "ARIADNE_TEST_LOG_NULL=1")
+endfunction()
